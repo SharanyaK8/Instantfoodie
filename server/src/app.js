@@ -3,7 +3,9 @@ import dotenv from "dotenv";
 dotenv.config();
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import userRouter from "./routes/user.route.js";
+import authRouter from "./routes/auth.route.js"; // make sure file name matches exactly
+import userRouter from "./routes/user.route.js"
+
 
 const app = express();
 app.set("trust proxy", 1);
@@ -28,11 +30,9 @@ app.use(express.urlencoded({extended:true}))//to parse the data sent through for
 
 app.use("/api/auth", authRouter)
 
-// // User routes -> profile, update profile
-// import userRouter from "./routes/user.route.js"
-// app.use("/api/users", userRouter)
+app.use("/api/users", userRouter)
 
-app.use("/api/users", userRouter);
+// app.use("/api/users", userRouter);
 
 // // Restaurant routes -> list restaurants, food items, menu
 // import restaurantRouter from "./routes/restaurant.route.js"
