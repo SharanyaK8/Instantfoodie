@@ -13,6 +13,6 @@ router.get('/AllFoodItems',authMiddleware , getAllFoodItems)
 router.get('/category/:category', authMiddleware , getFoodItemsByCategory)
 
 //to update food item
-router.put('/:id',authMiddleware, updateFoodInfo)
+router.patch('/:id',authMiddleware, updateFoodInfo)
 
 export default router

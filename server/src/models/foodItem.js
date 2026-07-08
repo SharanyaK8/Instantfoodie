@@ -33,7 +33,7 @@ const foodSchema = new mongoose.Schema({
         required: true,
         enum: [
             "Starter",
-            "Main Course",
+            "MainCourse",
             "Dessert",
             "Beverage",
             "Snacks",

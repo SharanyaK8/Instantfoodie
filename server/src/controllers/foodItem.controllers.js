@@ -96,7 +96,7 @@ export const updateFoodInfo = async (req, res) => {
         }
 
         const Restaurant = await restaurant.findOne({ owner: req.user._id }) //from authmiddleware take the user id to find teh restraurant 
-        const id = req.params.id;
+        const {id}= req.params;
         if (!Restaurant) {
             return res.status(404).json({
                 success: false,
@@ -150,7 +150,7 @@ export const updateFoodInfo = async (req, res) => {
 
 export const getFoodItemsByCategory = async (req, res) => {
     try {
-        const { category } = req.params.category
+        const { category } = req.params
         const Restaurant = await restaurant.findOne({ owner: req.user._id }) //from authmiddleware take the user id to find teh restraurant 
         const user = req.user;
         if (user.role !== "restaurant") {
