@@ -173,7 +173,7 @@ export const updateOrderStatus = async (req, res) => {
             })
         }
 
-        if (order.orderStatus === "Delivered" || order.orderStatus === "Shipped") {
+        if (order.orderStatus === "Delivered") {
             return res.status(400).json({
                 success: false,
                 message: "Order is already Completed",
