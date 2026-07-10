@@ -8,6 +8,10 @@ import authRouter from "./routes/auth.route.js"; // make sure file name matches 
 import userRouter from "./routes/user.route.js";
 import cartRouter from "./routes/cart.route.js";
 import foodItemsRouter from "./routes/foodItem.route.js";
+import userRouter from "./routes/user.route.js"
+import foodItemsRouter from './routes/foodItem.route.js'
+import orderRouter from './routes/order.route.js'
+
 
 const app = express();
 app.set("trust proxy", 1);
@@ -37,6 +41,13 @@ app.use("/api/users", userRouter);
 app.use("/api/restaurants", restaurantRouter);
 
 app.use("/api/foodItems", foodItemsRouter);
+
+
+app.use('/api/order', orderRouter)
+
+// // Restaurant routes -> list restaurants, food items, menu
+
+
 
 app.use("/api/cart", cartRouter);
 
