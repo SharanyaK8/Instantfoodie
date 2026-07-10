@@ -1,13 +1,54 @@
-import { useState } from "react";
-import { categories, dishes } from "../data/foodData";
+// import { useState } from "react";
+// import { categories, dishes } from "../data/foodData";
+import { useEffect, useState } from "react";
+import { getAllFoodItems } from "../services/food.service";
 import { HiStar, HiPlus, HiMinus, HiHeart, HiOutlineHeart } from "react-icons/hi2";
 import { useCart } from "../context/CartContext";
 import { useFavorites } from "../context/FavoritesContext";
 
 const CategorySection = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [dishes, setDishes] = useState([]);
+  const [categories, setCategories] = useState([]);
   const { getItemQuantity, increaseQuantity, decreaseQuantity } = useCart();
   const { isFavorite, toggleFavorite } = useFavorites();
+
+  useEffect(() => {
+
+    async function fetchFood() {
+
+      try {
+
+        const data = await getAllFoodItems();
+
+
+        setDishes(data.FoodItems);
+
+        const uniqueCategories = [
+          ...new Set(
+            data.FoodItems.map(item => item.category)
+          )
+        ];
+
+        setCategories(
+          uniqueCategories.map(cat => ({
+            id: cat,
+            name: cat
+          }))
+        );
+
+      } catch (error) {
+
+        console.log(error);
+
+      }
+
+    }
+
+
+    fetchFood();
+
+  }, []);
 
   const handleCategoryClick = (categoryId) => {
     setSelectedCategory((prev) => (prev === categoryId ? null : categoryId));
@@ -32,20 +73,16 @@ const CategorySection = () => {
               className="flex flex-col items-center gap-3 shrink-0 snap-start"
             >
               <div
-                className={`w-32 h-32 rounded-full overflow-hidden border-4 transition-all ${
-                  isActive ? "border-orange-500 scale-105" : "border-transparent"
-                }`}
+                className={`w-32 h-32 rounded-full overflow-hidden border-4 transition-all ${isActive ? "border-orange-500 scale-105" : "border-transparent"
+                  }`}
               >
-                <img
-                  src={cat.image}
-                  alt={cat.name}
-                  className="w-full h-full object-cover"
-                />
+                <div className="w-full h-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-sm">
+                  {cat.name}
+                </div>
               </div>
               <span
-                className={`text-base font-semibold ${
-                  isActive ? "text-orange-500" : "text-gray-700"
-                }`}
+                className={`text-base font-semibold ${isActive ? "text-orange-500" : "text-gray-700"
+                  }`}
               >
                 {cat.name}
               </span>
@@ -65,16 +102,16 @@ const CategorySection = () => {
 
       <div className="flex flex-wrap gap-6">
         {filteredDishes.map((dish) => {
-          const quantity = getItemQuantity(dish.id);
+          const quantity = getItemQuantity(dish._id);
 
           return (
             <div
-              key={dish.id}
+              key={dish._id}
               className="w-full sm:w-64 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow"
             >
               <div className="relative">
                 <img
-                  src={dish.image}
+                  src={dish.imageUrl}
                   alt={dish.name}
                   className="w-full h-52 object-cover"
                 />
@@ -84,7 +121,7 @@ const CategorySection = () => {
                   onClick={() => toggleFavorite(dish)}
                   className="absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors"
                 >
-                  {isFavorite(dish.id) ? (
+                  {isFavorite(dish._id) ? (
                     <HiHeart size={18} className="text-red-500" />
                   ) : (
                     <HiOutlineHeart size={18} className="text-gray-600" />
@@ -103,7 +140,7 @@ const CategorySection = () => {
                   ) : (
                     <div className="flex items-center gap-3 bg-white rounded-full shadow-md px-2 py-1">
                       <button
-                        onClick={() => decreaseQuantity(dish.id)}
+                        onClick={() => decreaseQuantity(dish._id)}
                         className="w-7 h-7 flex items-center justify-center rounded-full bg-red-100 hover:bg-red-200 text-red-500 transition-colors"
                       >
                         <HiMinus size={14} />
@@ -130,7 +167,7 @@ const CategorySection = () => {
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-500">Delivery · {dish.deliveryTime}</span>
-                  <span className="font-bold text-gray-900 text-base">₹{dish.price.toFixed(2)}</span>
+                  <span className="font-bold text-gray-900 text-base">₹{dish.price}</span>
                 </div>
               </div>
             </div>

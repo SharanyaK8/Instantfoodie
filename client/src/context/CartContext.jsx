@@ -1,48 +1,94 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import * as cartService from "../services/cart.service";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
 
-  const getItemQuantity = (itemId) => {
-    const item = cartItems.find((i) => i.id === itemId);
+  useEffect(() => {
+    loadCart();
+  }, []);
+
+  const loadCart = async () => {
+    try {
+      const data = await cartService.getCart();
+      setCartItems(data.data || []);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const getItemQuantity = (foodId) => {
+    const item = cartItems.find(
+      (i) => i.foodItemId?._id === foodId
+    );
+
     return item ? item.quantity : 0;
   };
 
-  const increaseQuantity = (dish) => {
-    setCartItems((prev) => {
-      const existing = prev.find((i) => i.id === dish.id);
+  const increaseQuantity = async (dish) => {
+    try {
+      const existing = cartItems.find(
+        (i) => i.foodItemId?._id === dish._id
+      );
+
       if (existing) {
-        return prev.map((i) =>
-          i.id === dish.id ? { ...i, quantity: i.quantity + 1 } : i
+        await cartService.updateCart(
+          existing._id,
+          existing.quantity + 1
+        );
+      } else {
+        await cartService.addToCart(dish._id, 1);
+      }
+
+      loadCart();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const decreaseQuantity = async (foodId) => {
+    try {
+      const existing = cartItems.find(
+        (i) => i.foodItemId?._id === foodId
+      );
+
+      if (!existing) return;
+
+      if (existing.quantity === 1) {
+        await cartService.removeCart(existing._id);
+      } else {
+        await cartService.updateCart(
+          existing._id,
+          existing.quantity - 1
         );
       }
-      return [...prev, { ...dish, quantity: 1 }];
-    });
+
+      loadCart();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const decreaseQuantity = (dishId) => {
-    setCartItems((prev) => {
-      const existing = prev.find((i) => i.id === dishId);
-      if (!existing) return prev;
-      if (existing.quantity === 1) {
-        return prev.filter((i) => i.id !== dishId);
-      }
-      return prev.map((i) =>
-        i.id === dishId ? { ...i, quantity: i.quantity - 1 } : i
-      );
-    });
+  const removeFromCart = async (cartId) => {
+    await cartService.removeCart(cartId);
+    loadCart();
   };
 
-  const removeFromCart = (dishId) => {
-    setCartItems((prev) => prev.filter((i) => i.id !== dishId));
+  const clearCart = async () => {
+    await cartService.clearCart();
+    loadCart();
   };
 
-  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const cartCount = cartItems.reduce(
+    (sum, item) => sum + item.quantity,
+    0
+  );
 
   const cartTotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) =>
+      sum + item.foodItemId.price * item.quantity,
     0
   );
 
@@ -56,6 +102,8 @@ export const CartProvider = ({ children }) => {
         increaseQuantity,
         decreaseQuantity,
         removeFromCart,
+        clearCart,
+        loadCart,
       }}
     >
       {children}

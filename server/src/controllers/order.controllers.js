@@ -26,32 +26,35 @@ export const PlaceOrder = async (req, res) => {
         let orderItems = []
 
         for (let item of items) {
-            let findItem = await foodItems.findById(item.foodItemId)
-            if (!findItem) {
-                return res.status(404).json({
-                    success: false,
-                    message: "No food item found",
 
-                })
-            }
+    console.log("Received food id:", item.foodItemId);
 
-            if (!findItem.isAvailable) {
-                return res.status(404).json({
-                    success: false,
-                    message: " Some items are out of stock",
+    let findItem = await foodItems.findById(item.foodItemId);
 
-                })
-            }
+    console.log("Found food:", findItem);
 
-            orderItems.push({
-                foodItemId: item.foodItemId,
-                name: findItem.name,
-                price: findItem.price,
-                quantity: item.quantity,
-                subtotal: item.quantity * findItem.price
-            })
-        }
+    if (!findItem) {
+        return res.status(404).json({
+            success: false,
+            message: "No food item found",
+        });
+    }
 
+    if (!findItem.isAvailable) {
+        return res.status(404).json({
+            success: false,
+            message: "Some items are out of stock",
+        });
+    }
+
+    orderItems.push({
+        foodItemId: item.foodItemId,
+        name: findItem.name,
+        price: findItem.price,
+        quantity: item.quantity,
+        subtotal: item.quantity * findItem.price
+    });
+}
         let totalAmount = orderItems.reduce((acc, ci) => acc + ci.subtotal, 0)
 
         let placeOrder = await Order.create({
@@ -200,3 +203,28 @@ export const updateOrderStatus = async (req, res) => {
             });
     }
 }
+
+export const getMyOrders = async (req, res) => {
+  try {
+    if (req.user.role !== "user") {
+      return res.status(403).json({
+        success: false,
+        message: "Only users can view their orders",
+      });
+    }
+
+    const orders = await Order.find({
+      userId: req.user._id,
+    }).sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      orders,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
