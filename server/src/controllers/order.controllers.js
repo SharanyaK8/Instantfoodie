@@ -6,6 +6,7 @@ import { get } from 'http';
 import { validTransition } from '../utils/orderStatusValidator.js';
 export const PlaceOrder = async (req, res) => {
     try {
+        
         let { restaurantId, items, deliveryAddress } = req.body; // items return array consisting of objects returning foodItem id and quantity
         if (!restaurantId || !items || items.length === 0 || !deliveryAddress) {
             return res.status(400).json({
@@ -129,8 +130,44 @@ export const getRestaurantOrders = async (req, res) => {
     }
 }
 
+export const trackOrder = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+
+        const order = await Order.findOne({ orderId })
+            .populate("restaurantId", "name")
+            .populate("userId", "name email");
+
+        if (!order) {
+            return res.status(404).json({
+                message: "Order not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            order: {
+                orderId: order.orderId,
+                status: order.orderStatus,
+                items: order.items,
+                totalAmount: order.totalAmount,
+                restaurant: order.restaurantId,
+                createdAt: order.createdAt
+            }
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
+
 export const updateOrderStatus = async (req, res) => {
     try {
+
+        console.log("UPDATE ORDER BODY:", req.body);
+        console.log("UPDATE ORDER PARAMS:", req.params);
         const { orderId } = req.params; // pass the generated order id like ORD-7898G3
         const { orderStatus } = req.body
 

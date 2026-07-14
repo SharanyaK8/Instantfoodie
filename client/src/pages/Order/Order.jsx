@@ -5,14 +5,16 @@ import { useCart } from "../../context/CartContext";
 import { getMyOrders, cancelOrder } from "../../services/order.service";
 
 const steps = [
-  { key: "placed", label: "Order Placed" },
-  { key: "preparing", label: "Preparing" },
-  { key: "out_for_delivery", label: "Out for Delivery" },
-  { key: "delivered", label: "Delivered" },
+ { key:"Placed", label:"Order Placed"},
+ { key:"Preparing", label:"Preparing"},
+ { key:"Out for Delivery", label:"Out for Delivery"},
+ { key:"Delivered", label:"Delivered"},
 ];
-
 // Statuses in which a user is still allowed to cancel
-const cancellableStatuses = ["placed", "preparing"];
+const cancellableStatuses = [
+  "Placed",
+  "Preparing",
+];
 
 
 const Order = () => {
@@ -112,15 +114,15 @@ const Order = () => {
 
           orders.map((order) => {
 
-            const activeStepIndex =
-              steps.findIndex(
-                (s) => s.key === order.status
-              );
+           const activeStepIndex =
+steps.findIndex(
+(s) => s.key === order.orderStatus
+);
 
             return (
 
               <div
-                key={order._id}
+                key={order.orderId}
                 className="relative rounded-3xl p-[1.5px] overflow-hidden transition-all duration-500 group mb-8 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.9)] hover:shadow-[0_30px_60px_-10px_rgba(245,158,11,0.2)] hover:-translate-y-1"
               >
 
@@ -136,7 +138,7 @@ const Order = () => {
                     <div>
 
                       <h3 className="text-white text-xl font-black tracking-tight">
-                        Order #{order._id.slice(-6)}
+                        Order #{order.orderId}
                       </h3>
 
                       <p className="text-neutral-400 text-sm mt-1">
@@ -155,7 +157,7 @@ const Order = () => {
 
 
                   {/* Cancelled banner (replaces progress tracker) */}
-                  {order.status === "cancelled" ? (
+                  {order.orderStatus === "Cancelled" ? (
                     <div className="flex items-center gap-3 mb-10 bg-red-500/10 border border-red-500/20 rounded-2xl px-5 py-4">
                       <HiOutlineXCircle size={22} className="text-red-400 shrink-0" />
                       <p className="text-red-400 font-bold text-sm">
@@ -209,26 +211,28 @@ const Order = () => {
                   {/* Ordered Items */}
                   <div className="space-y-4">
                     {order.items.map((item) => (
-                      <div
-                        key={item._id}
-                        className="flex items-center gap-4 bg-zinc-900/70 border border-neutral-800 rounded-2xl p-4 hover:border-amber-500/30 transition-all"
-                      >
-                        <img
-                          src={item.food?.imageUrl}
-                          alt={item.food?.name}
-                          className="w-16 h-16 rounded-xl object-cover bg-neutral-900"
-                        />
+                    <div
+  key={item.foodItemId}
+  className="flex items-center justify-between bg-zinc-900/70 border border-neutral-800 rounded-2xl p-4 hover:border-amber-500/30 transition-all"
+>
+  <div>
+    <h4 className="text-white font-bold text-base">
+      {item.name}
+    </h4>
 
-                        <div className="flex-1">
-                          <h4 className="text-white font-bold text-base">
-                            {item.food?.name}
-                          </h4>
+    <p className="text-neutral-400 text-sm mt-1">
+      Quantity : {item.quantity}
+    </p>
 
-                          <p className="text-neutral-400 text-sm mt-1">
-                            Quantity : {item.quantity}
-                          </p>
-                        </div>
-                      </div>
+    <p className="text-neutral-400 text-sm">
+      Price : ₹{item.price}
+    </p>
+  </div>
+
+  <p className="text-amber-500 font-bold">
+    ₹{item.subtotal}
+  </p>
+</div>
                     ))}
                   </div>
 
@@ -243,20 +247,20 @@ const Order = () => {
                     </span>
                   </div>
 
-                  {/* Cancel Order */}
-                  {cancellableStatuses.includes(order.status) && (
-                    confirmingId === order._id ? (
+                  {/* Cancel Order
+{cancellableStatuses.includes(order.orderStatus) && (
+                    confirmingId === order.orderId ? (
                       <div className="mt-5 flex flex-col sm:flex-row items-center gap-3 bg-red-500/5 border border-red-500/20 rounded-2xl px-5 py-4">
                         <p className="text-sm text-neutral-300 font-semibold flex-1 text-center sm:text-left">
                           Cancel this order? This can't be undone.
                         </p>
                         <div className="flex gap-2">
                           <button
-                            onClick={() => handleCancelOrder(order._id)}
-                            disabled={cancellingId === order._id}
+                            onClick={() => handleCancelOrder(order.orderId)}
+                            disabled={cancellingId === order.orderId}
                             className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-400 text-white font-bold text-sm transition-all disabled:opacity-50"
                           >
-                            {cancellingId === order._id ? "Cancelling..." : "Yes, Cancel"}
+                            {cancellingId === order.orderId ? "Cancelling..." : "Yes, Cancel"}
                           </button>
                           <button
                             onClick={() => setConfirmingId(null)}
@@ -268,14 +272,14 @@ const Order = () => {
                       </div>
                     ) : (
                       <button
-                        onClick={() => setConfirmingId(order._id)}
+                        onClick={() => setConfirmingId(order.orderId)}
                         className="mt-5 w-full flex items-center justify-center gap-2 rounded-2xl border border-red-500/20 bg-red-500/5 py-3 text-red-400 font-bold text-sm hover:bg-red-500 hover:text-white transition-all duration-300 active:scale-95"
                       >
                         <HiOutlineXCircle size={18} />
                         Cancel Order
                       </button>
                     )
-                  )}
+                  )} */}
                 </div>
               </div>
             );
