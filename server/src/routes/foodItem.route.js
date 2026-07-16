@@ -7,16 +7,20 @@ getAllFoodItems,
 updateFoodInfo,
 getFoodItemsByCategory,
 deleteFoodItem,
-getPublicFoodItems
+getPublicFoodItems,
+getRestaurantFoods
 } from "../controllers/foodItem.controllers.js";
+
 
 router.post('/newFoodItem',authMiddleware , createFoodItem)
 
-router.get('/AllFoodItems',authMiddleware , getAllFoodItems)
+router.get('/AllFoodItems',authMiddleware , getAllFoodItems) // for customer to get displayed all dishes from different restuarants 
 
-router.get('/public', getPublicFoodItems)
+router.get('/public', getPublicFoodItems) // for public access without authentication
 
-router.get('/category/:category', authMiddleware , getFoodItemsByCategory)
+router.get('/category/:category', authMiddleware , getFoodItemsByCategory)// for restaurants only access with authentication
+
+router.get('/my-food', authMiddleware, getRestaurantFoods) // to get all the food items to the restaurant owner.
 
 router.patch('/:id',authMiddleware, updateFoodInfo)
 

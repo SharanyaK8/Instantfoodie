@@ -22,10 +22,13 @@ export async function register({ fullName, email, password, role }) {
 }
 
 
-export async function login({ email, password }) {
+export async function login({ email, password, role }) {
+  let endpoint = "/api/auth/login";
+  if (role === "admin") endpoint = "/api/admin/login";
+  if (role === "restaurant") endpoint = "/api/auth/restaurant/login";
 
   const { data } = await api.post(
-    "/api/auth/login",
+    endpoint,
     {
       email,
       password,

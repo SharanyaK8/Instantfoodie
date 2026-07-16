@@ -2,6 +2,8 @@ import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 import Login from "./pages/Login/Login";
+import RestaurantLogin from "./pages/RestaurantLogin/RestaurantLogin";
+import AdminLogin from "./pages/AdminLogin/AdminLogin";
 import Signup from "./pages/Signup/Signup";
 import Home from "./pages/Home/Home";
 import Cart from "./pages/Cart/Cart";
@@ -11,6 +13,7 @@ import Tracking from "./pages/Tracking/Tracking";
 import Favorites from "./pages/Favorites/Favorites";
 import Profile from "./pages/Profile/Profile";
 import RestaurantOrders from "./pages/RestaurantOrders/RestaurantOrders";
+import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
 
 
 function App() {
@@ -22,6 +25,8 @@ function App() {
       <Route path="/" element={<Login />} />
 
       <Route path="/login" element={<Login />} />
+      <Route path="/restaurant-login" element={<RestaurantLogin />} />
+      <Route path="/admin-login" element={<AdminLogin />} />
 
       <Route path="/signup" element={<Signup />} />
 
@@ -101,6 +106,15 @@ function App() {
       {/* Restaurant */}
 
       <Route
+        path="/restaurant"
+        element={
+          <ProtectedRoute allowedRoles={["restaurant"]}>
+            <RestaurantOrders />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/restaurant-orders"
         element={
           <ProtectedRoute allowedRoles={["restaurant"]}>
@@ -109,6 +123,14 @@ function App() {
         }
       />
 
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
 
     </Routes>
   );

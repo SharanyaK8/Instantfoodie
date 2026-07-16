@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt';
 import User from '../models/user.js';
 import Token from '../utils/Token.js';
+import jwt from 'jsonwebtoken';
+
 
 const cookieOptions = {
     httpOnly: true,
@@ -107,3 +109,44 @@ export const userLogout = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
+
+export const restaurantLogin = async (req, res) => {
+    let { email, password } = req.body;
+    try {
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Please fill all the fields' });
+        }
+
+        let user = await User.findOne({ email: email });
+        if (!user) {
+            return res.status(404).json({ message: 'No user Found' });
+        }
+
+        if(user.role !== "restaurant") {
+            return res.status(403).json({ message: 'Access denied. Invalid Login API.' });
+        }
+
+        let check = await bcrypt.compare(password, user.password);
+        if (check) {
+            // Token utility is synchronous, no await needed
+            const token = Token(user.email, user._id,user.role);
+            
+            res.cookie("Token", token, cookieOptions);
+            
+            return res.status(200).json({ 
+                message: 'loggedIn successful',
+                user: {
+                    id: user._id,
+                    fullName: user.fullName,
+                    email: user.email,
+                    role: user.role
+                }
+            });
+        }
+        else {
+            return res.status(401).json({ message: 'Incorrect credentials' });
+        }
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}; // for logout of restaurant owner, the same userLogout function can be used as it clears the cookie and does not depend on the role.
