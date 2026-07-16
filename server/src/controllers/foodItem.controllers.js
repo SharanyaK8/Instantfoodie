@@ -103,38 +103,38 @@ export const getPublicFoodItems = async(req,res)=>{
     }
 
 }
-// export const getAllFoodItems = async (req, res) => {
-//     try {
-// const user = req.user;
+export const getRestaurantFoods = async (req, res) => {
+    try {
+const user = req.user;
 
-// if (user.role !== "restaurant") {
-//     return res.status(403).json({
-//         success: false,
-//         message: "Access denied. Only restaurant accounts can perform this action."
-//     });
-// }
+if (user.role !== "restaurant") {
+    return res.status(403).json({
+        success: false,
+        message: "Access denied. Only restaurant accounts can perform this action."
+    });
+}
 
-//         const Restaurant = await restaurant.findOne({ owner: req.user._id }) //from authmiddleware take the user id to find teh restraurant 
-//         if (!Restaurant) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: "Restaurant not found"
-//             })
-//         }
-//         const FoodItems = await foodItems.find({ restaurantId: Restaurant._id })
+        const Restaurant = await restaurant.findOne({ owner: req.user._id }) //from authmiddleware take the user id to find teh restraurant 
+        if (!Restaurant) {
+            return res.status(404).json({
+                success: false,
+                message: "Restaurant not found"
+            })
+        }
+        const FoodItems = await foodItems.find({ restaurantId: Restaurant._id })
 
-//         return res.status(200).json({
-//             success: true,
-//             FoodItems
-//         });
+        return res.status(200).json({
+            success: true,
+            FoodItems
+        });
 
-//     } catch (error) {
-//         return res.status(500).json({
-//             success: false,
-//             message: error.message
-//         });
-//     }
-// }
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
 
 // export const getAllFoodItems = async (req, res) => {
 //     try {
