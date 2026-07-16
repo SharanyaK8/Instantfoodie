@@ -1,56 +1,96 @@
 import foodItems from "../models/foodItem.js";
 import restaurant from "../models/restaurant.js"
+// export const createFoodItem = async (req, res) => {
+//     const { name, description, price, imageUrl, isVeg, category, preparationTime } = req.body;
+//     try {
+//         const user = req.user;
+
+//         if (user.role !== "restaurant") {
+//             return res.status(403).json({
+//                 success: false,
+//                 message: "Access denied. Only restaurant accounts can perform this action."
+//             });
+//         }
+
+//         const Restaurant = await restaurant.findOne({ owner: req.user._id }) //from authmiddleware take the user id to find teh restraurant 
+//         if (!Restaurant) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: "Restaurant not found"
+//             })
+//         }
+
+//         if (!name || !description || price == null || price < 0 || !category || preparationTime == null || preparationTime < 0) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Please provide valid food item details."
+//             });
+//         }
+
+//         const newFoodItem = await foodItems.create({
+//             name,
+//             description,
+//             price,
+//             imageUrl,
+//             isVeg,
+//             category,
+//             preparationTime,
+//             restaurantId: Restaurant._id
+//         })
+
+//         return res.status(201).json({
+//             success: true,
+//             message: "Food item created successfully.",
+//             foodItem: newFoodItem
+//         });
+//     }
+//     catch (error) {
+//         return res.status(500).json({
+//             success: false,
+//             message: error.message
+//         });
+//     }
+// }
 export const createFoodItem = async (req, res) => {
+  try {
+    if (req.user.role !== "restaurant") {
+      return res.status(403).json({
+        success: false,
+        message: "Only restaurants can create food items",
+      });
+    }
+
+    // Look up the restaurant owned by this logged-in user
+    const restaurant = await Restaurant.findOne({ owner: req.user._id });
+    if (!restaurant) {
+      return res.status(404).json({
+        success: false,
+        message: "Please create your restaurant profile first",
+      });
+    }
+
     const { name, description, price, imageUrl, isVeg, category, preparationTime } = req.body;
-    try {
-        const user = req.user;
 
-        if (user.role !== "restaurant") {
-            return res.status(403).json({
-                success: false,
-                message: "Access denied. Only restaurant accounts can perform this action."
-            });
-        }
+    const foodItem = await foodItems.create({
+      name,
+      description,
+      price,
+      imageUrl,
+      isVeg,
+      category,
+      preparationTime,
+      restaurantId: restaurant._id, // <-- auto-attached, never trusted from body
+    });
 
-        const Restaurant = await restaurant.findOne({ owner: req.user._id }) //from authmiddleware take the user id to find teh restraurant 
-        if (!Restaurant) {
-            return res.status(404).json({
-                success: false,
-                message: "Restaurant not found"
-            })
-        }
-
-        if (!name || !description || price == null || price < 0 || !category || preparationTime == null || preparationTime < 0) {
-            return res.status(400).json({
-                success: false,
-                message: "Please provide valid food item details."
-            });
-        }
-
-        const newFoodItem = await foodItems.create({
-            name,
-            description,
-            price,
-            imageUrl,
-            isVeg,
-            category,
-            preparationTime,
-            restaurantId: Restaurant._id
-        })
-
-        return res.status(201).json({
-            success: true,
-            message: "Food item created successfully.",
-            foodItem: newFoodItem
-        });
-    }
-    catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-}
+    return res.status(201).json({
+      success: true,
+      message: "Food item created successfully",
+      foodItem,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 export const getAllFoodItems = async (req,res)=>{
     try {

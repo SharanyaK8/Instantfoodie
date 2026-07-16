@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./routes/ProtectedRoute";
-
+import RestaurantProfile from "./pages/RestaurantProfile/RestaurantProfile";
 import Login from "./pages/Login/Login";
 import RestaurantLogin from "./pages/RestaurantLogin/RestaurantLogin";
 import AdminLogin from "./pages/AdminLogin/AdminLogin";
@@ -14,6 +14,7 @@ import Favorites from "./pages/Favorites/Favorites";
 import Profile from "./pages/Profile/Profile";
 import RestaurantOrders from "./pages/RestaurantOrders/RestaurantOrders";
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
+import RestaurantMenu from "./pages/RestaurantMenu/RestaurantMenu";
 
 
 function App() {
@@ -41,7 +42,23 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+  path="/restaurant-menu"
+  element={
+    <ProtectedRoute allowedRoles={["restaurant"]}>
+      <RestaurantMenu />
+    </ProtectedRoute>
+  }
+/>
 
+<Route
+  path="/restaurant-profile"
+  element={
+    <ProtectedRoute allowedRoles={["restaurant"]}>
+      <RestaurantProfile />
+    </ProtectedRoute>
+  }
+/>
 
       <Route
         path="/cart"

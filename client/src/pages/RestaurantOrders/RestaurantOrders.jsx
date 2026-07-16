@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-
+import { useNavigate } from "react-router-dom";
+import { getMyRestaurants } from "../../services/restaurant.service";
 import Navbar from "../../components/Navbar";
 import {
   getRestaurantOrders,
@@ -16,15 +17,33 @@ const statusOptions = [
 
 function RestaurantOrders() {
 
+  const navigate = useNavigate();
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
 
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
+  checkRestaurantAndFetchOrders();
+}, []);
 
+async function checkRestaurantAndFetchOrders() {
+  try {
+    const restaurantData = await getMyRestaurants();
+    const restaurants = restaurantData.restaurants || [];
+
+    if (restaurants.length === 0) {
+      navigate("/restaurant-profile");
+      return;
+    }
+
+    await fetchOrders();
+  } catch (error) {
+    console.log("Restaurant check error:", error);
+    setLoading(false);
+  }
+}
 
   async function fetchOrders() {
 
