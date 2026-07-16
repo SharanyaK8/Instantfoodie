@@ -1,15 +1,34 @@
 import { Link, useLocation } from "react-router-dom";
-import { HiOutlineFire, HiOutlineShoppingBag, HiHome, HiClipboardDocumentList, HiHeart, HiUser } from "react-icons/hi2";
+import { HiOutlineFire, HiOutlineShoppingBag, HiOutlineHome, HiClipboardDocumentList, HiHeart, HiUser } from "react-icons/hi2";
+import { useAuth } from "../context/AuthContext";
 
-const navLinks = [
-  { label: "Discover", path: "/home", icon: <HiHome size={22} /> },
+const userNavLinks = [
+  { label: "Discover", path: "/home", icon: <HiOutlineHome size={22} /> },
   { label: "Favorites", path: "/favorites", icon: <HiHeart size={22} /> },
   { label: "Orders", path: "/order", icon: <HiClipboardDocumentList size={22} /> },
   { label: "Profile", path: "/profile", icon: <HiUser size={22} /> },
 ];
 
+const restaurantNavLinks = [
+  { label: "Orders", path: "/restaurant-orders", icon: <HiClipboardDocumentList size={22} /> },
+  { label: "Profile", path: "/profile", icon: <HiUser size={22} /> },
+];
+
+const adminNavLinks = [
+  { label: "Dashboard", path: "/admin", icon: <HiClipboardDocumentList size={22} /> },
+  { label: "Profile", path: "/profile", icon: <HiUser size={22} /> },
+];
+
 const Navbar = ({ cartCount = 0 }) => {
   const location = useLocation();
+  const { user, loading } = useAuth();
+  const role = user?.role;
+  const navLinks = role === "restaurant" ? restaurantNavLinks : role === "admin" ? adminNavLinks : userNavLinks;
+  const logoRoute = role === "restaurant" ? "/restaurant" : role === "admin" ? "/admin" : "/home";
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <nav className="sticky top-4 z-50 mx-auto w-[95%] max-w-7xl mb-12">
@@ -24,7 +43,7 @@ const Navbar = ({ cartCount = 0 }) => {
 
           {/* Logo with glow ring */}
           <Link
-            to="/home"
+            to={logoRoute}
             className="relative rounded-full p-[1.5px] overflow-hidden group/logo shrink-0"
           >
             {/* Rotating glow ring */}
@@ -83,10 +102,11 @@ const Navbar = ({ cartCount = 0 }) => {
           </ul>
 
           {/* Cart pill with glow ring */}
-          <Link
-            to="/cart"
-            className="relative rounded-full p-[1.5px] overflow-hidden group/cart shrink-0"
-          >
+          {role === "user" && (
+            <Link
+              to="/cart"
+              className="relative rounded-full p-[1.5px] overflow-hidden group/cart shrink-0"
+            >
             {/* Rotating glow ring */}
             <div
               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 bg-[conic-gradient(from_0deg,transparent_30%,#f59e0b_50%,transparent_70%)] opacity-60 group-hover/cart:opacity-100 transition-opacity duration-500 animate-streak-active pointer-events-none"
@@ -104,6 +124,7 @@ const Navbar = ({ cartCount = 0 }) => {
               )}
             </div>
           </Link>
+          )}
         </div>
       </div>
     </nav>
