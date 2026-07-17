@@ -9,6 +9,7 @@ const CategorySection = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [dishes, setDishes] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const { getItemQuantity, increaseQuantity, decreaseQuantity } = useCart();
   const { isFavorite, toggleFavorite } = useFavorites();
 
@@ -55,13 +56,35 @@ const CategorySection = () => {
     setSelectedCategory((prev) => (prev === categoryId ? null : categoryId));
   };
 
-  const filteredDishes = selectedCategory
-    ? dishes.filter((d) => d.category === selectedCategory)
-    : dishes;
+  const filteredDishes = dishes.filter((dish) => {
+    const matchesCategory = selectedCategory ? dish.category === selectedCategory : true;
+    const matchesSearch = dish.name?.toLowerCase().includes(searchQuery.trim().toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <div className="w-[95%] max-w-7xl mx-auto mt-12 pb-20 px-2 sm:px-4">
       {/* ===== Explore by Category ===== */}
+      
+      {/* Search bar */}
+      <div className="relative mb-8">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search for dishes..."
+          className="w-full bg-zinc-900/60 border-2 border-amber-500 outline-none rounded-2xl px-5 py-3.5 text-white placeholder:text-neutral-600 transition-colors"
+        />
+        {searchQuery && (
+          <button
+            onClick={() => setSearchQuery("")}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white text-sm font-bold"
+          >
+            ✕
+          </button>
+        )}
+      </div>
+
       <h2 className="text-2xl sm:text-3xl font-black text-white mb-6 tracking-tight">Explore by Category</h2>
 
       {/* FIXED ROW BOUNDS: Added px-4, py-4, and -my-4 to perfectly stop left-edge circle clipping */}
@@ -115,7 +138,9 @@ const CategorySection = () => {
 
       {/* ===== Top Dishes ===== */}
       <h2 className="text-xl sm:text-2xl font-black text-white mb-6 tracking-tight">
-        {selectedCategory
+        {searchQuery
+          ? `Results for "${searchQuery}"`
+          : selectedCategory
           ? `${categories.find((c) => c.id === selectedCategory)?.name} for You`
           : "Top Dishes for You"}
       </h2>

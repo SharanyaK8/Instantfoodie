@@ -18,18 +18,35 @@ function Tracking() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+    let interval;
+
     const fetchOrder = async () => {
       try {
         const response = await trackOrder(orderId);
+        if (!isMounted) return;
+
         setOrder(response.order);
+
+        const finalStatuses = ["Delivered", "Cancelled"];
+        if (finalStatuses.includes(response.order?.status) && interval) {
+          clearInterval(interval);
+        }
       } catch (error) {
         console.log("Tracking error:", error);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     fetchOrder();
+
+    interval = setInterval(fetchOrder, 8000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, [orderId]);
 
   if (loading) {

@@ -31,25 +31,25 @@ function RestaurantOrders() {
   const [statusError, setStatusError] = useState("");
 
   useEffect(() => {
-  checkRestaurantAndFetchOrders();
-}, []);
+    checkRestaurantAndFetchOrders();
+  }, []);
 
-async function checkRestaurantAndFetchOrders() {
-  try {
-    const restaurantData = await getMyRestaurants();
-    const restaurants = restaurantData.restaurants || [];
+  async function checkRestaurantAndFetchOrders() {
+    try {
+      const restaurantData = await getMyRestaurants();
+      const restaurants = restaurantData.restaurants || [];
 
-    if (restaurants.length === 0) {
-      navigate("/restaurant-profile");
-      return;
+      if (restaurants.length === 0) {
+        navigate("/restaurant-profile");
+        return;
+      }
+
+      await fetchOrders();
+    } catch (error) {
+      console.log("Restaurant check error:", error);
+      setLoading(false);
     }
-
-    await fetchOrders();
-  } catch (error) {
-    console.log("Restaurant check error:", error);
-    setLoading(false);
   }
-}
 
   async function fetchOrders() {
 
@@ -89,7 +89,7 @@ async function checkRestaurantAndFetchOrders() {
 
       await fetchOrders();
 
-    } catch(error) {
+    } catch (error) {
 
       setStatusError(
         error?.response?.data?.message || "Could not update order status."
@@ -145,7 +145,7 @@ async function checkRestaurantAndFetchOrders() {
             <div className="space-y-6">
 
               {
-                orders.map((order)=>(
+                orders.map((order) => (
 
                   <div
                     key={order.orderId}
@@ -166,15 +166,24 @@ async function checkRestaurantAndFetchOrders() {
                     </div>
 
 
-                    <p className="text-neutral-400 mb-4">
-                      Customer: {order.userId?.name || "Customer"}
+                    <p className="text-neutral-400 text-sm mb-1">
+                      Customer: {order.userId?.fullName || order.userId?.name || "Customer"}
+                    </p>
+                    <p className="text-neutral-500 text-xs mb-4">
+                      Placed on{" "}
+                      {new Date(order.createdAt).toLocaleString("en-IN", {
+                        day: "numeric",
+                        month: "short",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </p>
 
 
                     <div className="space-y-3">
 
                       {
-                        order.items.map((item)=>(
+                        order.items.map((item) => (
 
                           <div
                             key={item.foodItemId}
@@ -203,48 +212,27 @@ async function checkRestaurantAndFetchOrders() {
                         Total: ₹{order.totalAmount}
                       </p>
 
-
                       {
                         nextValidStatus[order.orderStatus]?.length > 0 && (
-
-                        <select
-
-                          disabled={
-                            updatingId === order.orderId
-                          }
-
-                          value={order.orderStatus}
-
-                          onChange={(e)=>
-                            changeStatus(
-                              order.orderId,
-                              e.target.value
-                            )
-                          }
-
-                          className="bg-black text-white border border-neutral-700 rounded-xl px-4 py-2"
-
-                        >
-
-                          <option value={order.orderStatus}>
-                            {order.orderStatus}
-                          </option>
-
-                          {
-                            nextValidStatus[order.orderStatus].map(status=>(
-
-                                <option
-                                  key={status}
-                                  value={status}
-                                >
-                                  {status}
-                                </option>
-
-                              ))
-                          }
-
-                        </select>
-
+                          <div className="flex gap-2">
+                            {nextValidStatus[order.orderStatus].map((status) => (
+                              <button
+                                key={status}
+                                disabled={updatingId === order.orderId}
+                                onClick={() => changeStatus(order.orderId, status)}
+                                className={`text-sm font-bold px-4 py-2 rounded-xl transition-all disabled:opacity-50 ${status === "Cancelled"
+                                    ? "bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20"
+                                    : "bg-amber-500 text-neutral-950 hover:bg-amber-600"
+                                  }`}
+                              >
+                                {updatingId === order.orderId
+                                  ? "Updating..."
+                                  : status === "Cancelled"
+                                    ? "Cancel Order"
+                                    : `Mark as ${status}`}
+                              </button>
+                            ))}
+                          </div>
                         )
                       }
 
