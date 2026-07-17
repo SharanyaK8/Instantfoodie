@@ -129,6 +129,15 @@ function RestaurantMenu() {
     }
   }
 
+  async function handleToggleAvailability(item) {
+    try {
+      await updateFoodItem(item._id, { isAvailable: !item.isAvailable });
+      await loadItems();
+    } catch (err) {
+      console.log("Toggle availability error:", err);
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#050505]">
@@ -276,6 +285,26 @@ function RestaurantMenu() {
                 <p className="text-neutral-400 text-sm mb-3">
                   {item.description}
                 </p>
+                
+                <div className="flex items-center gap-2 mb-3">
+                  <span
+                    className={`text-xs font-bold px-3 py-1 rounded-full ${
+                      item.isAvailable
+                        ? "bg-green-500/10 text-green-400"
+                        : "bg-red-500/10 text-red-400"
+                    }`}
+                  >
+                    {item.isAvailable ? "Available" : "Unavailable"}
+                  </span>
+
+                  <button
+                    onClick={() => handleToggleAvailability(item)}
+                    className="text-xs font-bold text-neutral-300 hover:text-white border border-neutral-700 rounded-lg px-3 py-1.5"
+                  >
+                    {item.isAvailable ? "Mark Unavailable" : "Mark Available"}
+                  </button>
+                </div>
+
                 <p className="text-neutral-500 text-xs mb-4">
                   {item.category} · {item.isVeg ? "Veg" : "Non-Veg"} ·{" "}
                   {item.preparationTime} min
