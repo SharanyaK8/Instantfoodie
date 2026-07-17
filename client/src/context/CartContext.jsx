@@ -1,14 +1,20 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useRef } from "react";
 import * as cartService from "../services/cart.service";
+import { useAuth } from "./AuthContext";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
+  const [switchPrompt, setSwitchPrompt] = useState(null); 
+  const resolveSwitchRef = useRef(null);
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    loadCart();
-  }, []);
+     if (!authLoading && user?.role === "user") {
+      loadCart();
+    }
+  }, [authLoading, user]);
 
   const loadCart = async () => {
     try {
@@ -38,13 +44,39 @@ export const CartProvider = ({ children }) => {
           existing._id,
           existing.quantity + 1
         );
-      } else {
-        await cartService.addToCart(dish._id, 1);
+        loadCart();
+        return;
       }
 
+      const currentRestaurantId = cartItems[0]?.foodItemId?.restaurantId;
+
+      if (
+        currentRestaurantId &&
+        dish.restaurantId &&
+        currentRestaurantId !== dish.restaurantId
+      ) {
+        const confirmed = await new Promise((resolve) => {
+          resolveSwitchRef.current = resolve;
+          setSwitchPrompt({ dish });
+        });
+
+        if (!confirmed) return;
+
+        await cartService.clearCart();
+      }
+
+      await cartService.addToCart(dish._id, 1);
       loadCart();
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  const resolveSwitchPrompt = (confirmed) => {
+    setSwitchPrompt(null);
+    if (resolveSwitchRef.current) {
+      resolveSwitchRef.current(confirmed);
+      resolveSwitchRef.current = null;
     }
   };
 
@@ -130,6 +162,37 @@ export const CartProvider = ({ children }) => {
       }}
     >
       {children}
+
+      {switchPrompt && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+          <div className="w-full max-w-sm bg-zinc-900 border border-amber-500/20 rounded-3xl p-6 shadow-[0_32px_64px_rgba(0,0,0,0.7)]">
+            <h3 className="text-white font-bold text-lg mb-2">
+              Start a new order?
+            </h3>
+            <p className="text-neutral-400 text-sm mb-6">
+              Your cart has items from another restaurant. Adding{" "}
+              <span className="text-white font-semibold">
+                {switchPrompt.dish.name}
+              </span>{" "}
+              will clear your current cart first.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => resolveSwitchPrompt(false)}
+                className="flex-1 bg-zinc-950 border border-neutral-700 text-white font-semibold py-3 rounded-xl hover:bg-neutral-900 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => resolveSwitchPrompt(true)}
+                className="flex-1 bg-amber-500 hover:bg-amber-600 text-neutral-950 font-bold py-3 rounded-xl transition-colors"
+              >
+                Clear & Add
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </CartContext.Provider>
   );
 };

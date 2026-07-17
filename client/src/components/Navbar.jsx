@@ -26,7 +26,7 @@ const Navbar = ({ cartCount = 0 }) => {
   const { user, loading } = useAuth();
   const role = user?.role;
   const navLinks = role === "restaurant" ? restaurantNavLinks : role === "admin" ? adminNavLinks : userNavLinks;
-  const logoRoute = role === "restaurant" ? "/restaurant" : role === "admin" ? "/admin" : "/home";
+  const logoRoute = role === "restaurant" ? "/restaurant-orders" : role === "admin" ? "/admin" : "/home";
 
   if (loading) {
     return null;

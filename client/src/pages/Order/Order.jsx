@@ -1,16 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { HiCheckCircle, HiOutlineClock, HiOutlineXCircle, HiArrowPath, HiOutlineShoppingBag } from "react-icons/hi2";
+import {  HiOutlineClock, HiOutlineXCircle, HiArrowPath, HiOutlineShoppingBag } from "react-icons/hi2";
 import Navbar from "../../components/Navbar";
 import { useCart } from "../../context/CartContext";
 import { getMyOrders, cancelOrder } from "../../services/order.service";
 
-const steps = [
-  { key: "Placed", label: "Order Placed" },
-  { key: "Preparing", label: "Preparing" },
-  { key: "Out for Delivery", label: "Out for Delivery" },
-  { key: "Delivered", label: "Delivered" },
-];
+
 
 // Cancel-by-customer is intentionally not wired up yet — backend's
 // updateOrderStatus only allows role === "restaurant" to change status.
@@ -204,11 +199,6 @@ const navigate = useNavigate();
         ) : (
 
           filteredOrders.map((order) => {
-
-            const activeStepIndex = steps.findIndex(
-              (s) => s.key === order.orderStatus
-            );
-
             return (
 
               <div
@@ -256,52 +246,12 @@ const navigate = useNavigate();
                   </div>
 
 
-                  {order.orderStatus === "Cancelled" ? (
-                    <div className="flex items-center gap-3 mb-10 bg-red-500/10 border border-red-500/20 rounded-2xl px-5 py-4">
+                  {order.orderStatus === "Cancelled" && (
+                    <div className="flex items-center gap-3 mb-8 bg-red-500/10 border border-red-500/20 rounded-2xl px-5 py-4">
                       <HiOutlineXCircle size={22} className="text-red-400 shrink-0" />
                       <p className="text-red-400 font-bold text-sm">
                         This order was cancelled.
                       </p>
-                    </div>
-                  ) : (
-                    <div className="flex items-start justify-between mb-10">
-                      {steps.map((step, i) => (
-                        <div
-                          key={step.key}
-                          className="flex-1 flex flex-col items-center relative"
-                        >
-                          {i !== steps.length - 1 && (
-                            <div
-                              className={`absolute top-5 left-1/2 w-full h-[2px] ${i < activeStepIndex
-                                  ? "bg-amber-500"
-                                  : "bg-neutral-800"
-                                }`}
-                            />
-                          )}
-
-                          <div
-                            className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300 ${i <= activeStepIndex
-                                ? "bg-amber-500 text-neutral-950 shadow-lg shadow-amber-500/30"
-                                : "bg-neutral-900 border border-neutral-700 text-neutral-500"
-                              }`}
-                          >
-                            {i <= activeStepIndex ? (
-                              <HiCheckCircle size={18} />
-                            ) : (
-                              i + 1
-                            )}
-                          </div>
-
-                          <p
-                            className={`mt-3 text-[10px] sm:text-xs px-1 font-semibold text-center ${i <= activeStepIndex
-                                ? "text-white"
-                                : "text-neutral-500"
-                              }`}
-                          >
-                            {step.label}
-                          </p>
-                        </div>
-                      ))}
                     </div>
                   )}
 

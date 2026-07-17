@@ -13,7 +13,13 @@ const statusOptions = [
   "Out for Delivery",
   "Delivered",
 ];
-
+const nextValidStatus = {
+  Placed: ["Preparing", "Cancelled"],
+  Preparing: ["Out for Delivery"],
+  "Out for Delivery": ["Delivered"],
+  Delivered: [],
+  Cancelled: [],
+};
 
 function RestaurantOrders() {
 
@@ -22,7 +28,7 @@ function RestaurantOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
-
+  const [statusError, setStatusError] = useState("");
 
   useEffect(() => {
   checkRestaurantAndFetchOrders();
@@ -74,6 +80,7 @@ async function checkRestaurantAndFetchOrders() {
     try {
 
       setUpdatingId(orderId);
+      setStatusError("");
 
       await updateOrderStatus(
         orderId,
@@ -84,9 +91,8 @@ async function checkRestaurantAndFetchOrders() {
 
     } catch(error) {
 
-      console.log(
-        "Update status error:",
-        error
+      setStatusError(
+        error?.response?.data?.message || "Could not update order status."
       );
 
     } finally {
@@ -119,6 +125,12 @@ async function checkRestaurantAndFetchOrders() {
         <h1 className="text-3xl font-black text-white mb-8">
           Restaurant Orders
         </h1>
+
+        {statusError && (
+          <div className="mb-6 rounded-2xl border border-red-500/20 bg-red-500/10 px-5 py-3 text-red-400 text-sm font-semibold text-center">
+            {statusError}
+          </div>
+        )}
 
 
         {
@@ -193,8 +205,7 @@ async function checkRestaurantAndFetchOrders() {
 
 
                       {
-                        order.orderStatus !== "Delivered" &&
-                        order.orderStatus !== "Cancelled" &&
+                        nextValidStatus[order.orderStatus]?.length > 0 && (
 
                         <select
 
@@ -219,13 +230,8 @@ async function checkRestaurantAndFetchOrders() {
                             {order.orderStatus}
                           </option>
 
-
                           {
-                            statusOptions
-                              .filter(
-                                s => s !== order.orderStatus
-                              )
-                              .map(status=>(
+                            nextValidStatus[order.orderStatus].map(status=>(
 
                                 <option
                                   key={status}
@@ -239,6 +245,7 @@ async function checkRestaurantAndFetchOrders() {
 
                         </select>
 
+                        )
                       }
 
 
