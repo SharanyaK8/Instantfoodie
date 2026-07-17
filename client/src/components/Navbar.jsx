@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { HiOutlineFire, HiOutlineShoppingBag, HiOutlineHome, HiClipboardDocumentList, HiHeart, HiUser } from "react-icons/hi2";
+import { HiOutlineFire, HiOutlineShoppingBag, HiOutlineHome,HiOutlineSquares2X2, HiClipboardDocumentList, HiHeart, HiUser } from "react-icons/hi2";
 import { useAuth } from "../context/AuthContext";
 
 const userNavLinks = [
@@ -10,6 +10,7 @@ const userNavLinks = [
 ];
 
 const restaurantNavLinks = [
+  { label: "Dashboard", path: "/restaurant", icon: <HiOutlineSquares2X2 size={22} /> },
   { label: "Orders", path: "/restaurant-orders", icon: <HiClipboardDocumentList size={22} /> },
   { label: "Menu", path: "/restaurant-menu", icon: <HiOutlineFire size={22} /> },
   { label: "Restaurant", path: "/restaurant-profile", icon: <HiUser size={22} /> },

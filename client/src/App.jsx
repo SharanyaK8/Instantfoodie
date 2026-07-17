@@ -16,6 +16,7 @@ import RestaurantOrders from "./pages/RestaurantOrders/RestaurantOrders";
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
 import RestaurantMenu from "./pages/RestaurantMenu/RestaurantMenu";
 import RestaurantSignup from "./pages/RestaurantSignup/RestaurantSignup";
+import RestaurantDashboard from "./pages/RestaurantDashboard/RestaurantDashboard";
 
 
 function App() {
@@ -123,12 +124,19 @@ function App() {
 
 
       {/* Restaurant */}
-
       <Route
         path="/restaurant"
         element={
           <ProtectedRoute allowedRoles={["restaurant"]}>
-            <RestaurantOrders />
+            <RestaurantDashboard />
+          </ProtectedRoute>
+        }
+      />
+       <Route
+        path="/restaurant-dashboard"
+        element={
+          <ProtectedRoute allowedRoles={["restaurant"]}>
+            <RestaurantDashboard />
           </ProtectedRoute>
         }
       />

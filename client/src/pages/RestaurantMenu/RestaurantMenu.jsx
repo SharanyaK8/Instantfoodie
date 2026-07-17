@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import {
   getMyFoodItems,
@@ -38,6 +39,13 @@ function RestaurantMenu() {
   useEffect(() => {
     loadItems();
   }, []);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.openAdd) {
+      openAddForm();
+    }
+  }, [location.state]);
 
   async function loadItems() {
     try {
@@ -56,8 +64,8 @@ function RestaurantMenu() {
         field === "isVeg"
           ? e.target.value === "true"
           : field === "price" || field === "preparationTime"
-          ? e.target.value
-          : e.target.value;
+            ? e.target.value
+            : e.target.value;
       setForm((prev) => ({ ...prev, [field]: value }));
     };
   }
@@ -285,14 +293,13 @@ function RestaurantMenu() {
                 <p className="text-neutral-400 text-sm mb-3">
                   {item.description}
                 </p>
-                
+
                 <div className="flex items-center gap-2 mb-3">
                   <span
-                    className={`text-xs font-bold px-3 py-1 rounded-full ${
-                      item.isAvailable
+                    className={`text-xs font-bold px-3 py-1 rounded-full ${item.isAvailable
                         ? "bg-green-500/10 text-green-400"
                         : "bg-red-500/10 text-red-400"
-                    }`}
+                      }`}
                   >
                     {item.isAvailable ? "Available" : "Unavailable"}
                   </span>
