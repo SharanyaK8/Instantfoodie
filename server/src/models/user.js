@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
-    fullName: { // Fixed: Changed from fullname to fullName to match your controllers
+    fullName: {
+      // Fixed: Changed from fullname to fullName to match your controllers
       type: String,
       required: true,
       trim: true,
@@ -44,14 +45,26 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "restaurant", "admin"], // Added restaurant just in case you need it!
       default: "user",
     },
+
     isBlocked: {
       type: Boolean,
       default: false,
-    }
+    },
+
+    favouriteItems: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "foodItems",
+        },
+      ],
+      default: [],
+    },
   },
+
   {
     timestamps: true,
-  }
+  },
 );
 
 const User = mongoose.model("User", userSchema);
