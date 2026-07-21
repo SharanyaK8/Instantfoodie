@@ -12,7 +12,7 @@ import {
   getRestaurants,
   getAllOrders,
 } from "../../services/admin.service";
-import { getPublicFoodItems } from "../../services/food.service";
+import { getPublicFoodItems , deleteFoodItem} from "../../services/food.service";
 
 const tabs = [
   { key: "users", label: "Users", icon: <HiOutlineUsers size={18} /> },
@@ -68,11 +68,10 @@ const AdminDashboard = () => {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-colors ${
-                activeTab === tab.key
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-colors ${activeTab === tab.key
                   ? "bg-amber-500 text-neutral-950"
                   : "text-neutral-400 hover:text-white hover:bg-zinc-900"
-              }`}
+                }`}
             >
               {tab.icon}
               {tab.label}
@@ -205,6 +204,7 @@ const RestaurantsTab = () => {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-neutral-400 border-b border-neutral-800">
+                <th className="py-3 pr-4 font-semibold">Restaurant Name</th>
                 <th className="py-3 pr-4 font-semibold">Owner Name</th>
                 <th className="py-3 pr-4 font-semibold">Email</th>
                 <th className="py-3 pr-4 font-semibold">Joined</th>
@@ -214,7 +214,7 @@ const RestaurantsTab = () => {
             <tbody>
               {restaurants.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="py-6 text-neutral-500 text-center">
+                  <td colSpan={5} className="py-6 text-neutral-500 text-center">
                     No restaurant accounts found.
                   </td>
                 </tr>
@@ -222,20 +222,22 @@ const RestaurantsTab = () => {
                 restaurants.map((r) => (
                   <tr key={r._id} className="border-b border-neutral-900">
                     <td className="py-3 pr-4 text-white font-medium">
-                      {r.fullName}
+                      {r.restaurantName || "—"}
                     </td>
-                    <td className="py-3 pr-4 text-neutral-300">{r.email}</td>
+                    <td className="py-3 pr-4 text-white">
+                      {r.owner?.fullName || "—"}
+                    </td>
+                    <td className="py-3 pr-4 text-neutral-300">{r.owner?.email || "—"}</td>
                     <td className="py-3 pr-4 text-neutral-500">
                       {new Date(r.createdAt).toLocaleDateString("en-IN")}
                     </td>
                     <td className="py-3 pr-4">
                       <div className="flex gap-2">
                         <button
-                          disabled
-                          title="No status field exists on the Restaurant model yet"
-                          className="text-xs font-bold text-neutral-600 border border-neutral-800 rounded-lg px-3 py-1.5 cursor-not-allowed"
+                          onClick={() => updateRestaurantStatus(r._id)}
+                          className="text-xs font-bold text-amber-400 border border-amber-500 rounded-lg px-3 py-1.5"
                         >
-                          Approve / Suspend
+                          {r.isOpen ? "Close" : "Open"}
                         </button>
                         <button
                           disabled
@@ -335,11 +337,10 @@ const OrdersTab = () => {
       <div className="flex items-center gap-2 mb-5 flex-wrap">
         <button
           onClick={() => setStatusFilter("")}
-          className={`px-3 py-1.5 rounded-full text-xs font-bold ${
-            statusFilter === ""
+          className={`px-3 py-1.5 rounded-full text-xs font-bold ${statusFilter === ""
               ? "bg-amber-500 text-neutral-950"
               : "bg-zinc-900 text-neutral-400"
-          }`}
+            }`}
         >
           All Statuses
         </button>
@@ -347,11 +348,10 @@ const OrdersTab = () => {
           <button
             key={s}
             onClick={() => setStatusFilter(s)}
-            className={`px-3 py-1.5 rounded-full text-xs font-bold ${
-              statusFilter === s
+            className={`px-3 py-1.5 rounded-full text-xs font-bold ${statusFilter === s
                 ? "bg-amber-500 text-neutral-950"
                 : "bg-zinc-900 text-neutral-400"
-            }`}
+              }`}
           >
             {s}
           </button>
@@ -365,7 +365,7 @@ const OrdersTab = () => {
           <option value="">All Restaurants</option>
           {restaurantOptions.map((r) => (
             <option key={r._id} value={r._id}>
-              {r.fullName}
+              {r.restaurantName}
             </option>
           ))}
         </select>

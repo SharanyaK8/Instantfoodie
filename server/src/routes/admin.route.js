@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  adminRegister,
   adminLogin,
   adminLogout,
   getAllUsers,
@@ -18,12 +19,21 @@ import authorizeRole from "../middlewares/role.middleware.js";
 const router = express.Router();
 
 /**
+ * @route POST /api/admin/register
+ * @description Register a new admin account
+ * @access Public
+ */
+router.post("/register", adminRegister);
+
+/**
  * @route POST /api/admin/login
  * @description Authenticate admin and return JWT token
  * @access Public
  */
 router.post("/login", adminLogin);
 
+
+// Protected Admin Routes
 router.use(authMiddleware);
 router.use(authorizeRole("admin"));
 
@@ -64,7 +74,7 @@ router.get("/restaurants", getAllRestaurants);
 
 /**
  * @route PATCH /api/admin/restaurants/:id/status
- * @description Approve or update restaurant status
+ * @description Update restaurant open/close status
  * @access Admin
  */
 router.patch("/restaurants/:id/status", updateRestaurantStatus);
@@ -89,5 +99,6 @@ router.delete("/food-item/:id", deleteFoodItem);
  * @access Admin
  */
 router.get("/orders", getAllOrders);
+
 
 export default router;
