@@ -31,8 +31,14 @@
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
@@ -43,23 +49,26 @@
 }
 
 @keyframes glowPulse {
-  0%, 100% { 
-    opacity: 1; 
-    transform: scale(1); 
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
-  50% { 
-    opacity: 0.6; 
-    transform: scale(1.05); 
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
   }
 }
 @layer utilities {
   @keyframes spin-streak {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
   .animate-streak-active {
     animation: spin-streak 4s linear infinite;
   }
 }
-
-

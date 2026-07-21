@@ -17,6 +17,8 @@ export const getRestaurants = async () => {
 
 export const getAllOrders = async (filters = {}) => {
   const params = new URLSearchParams(filters).toString();
-  const { data } = await api.get(`/api/admin/orders${params ? `?${params}` : ""}`);
+  const { data } = await api.get(
+    `/api/admin/orders${params ? `?${params}` : ""}`,
+  );
   return data;
 };

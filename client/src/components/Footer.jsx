@@ -1,19 +1,12 @@
 import { Link } from "react-router-dom";
 import { HiOutlineFire } from "react-icons/hi2";
-import {
-  FaInstagram,
-  FaTwitter,
-  FaFacebookF,
-  FaYoutube,
-} from "react-icons/fa";
+import { FaInstagram, FaTwitter, FaFacebookF, FaYoutube } from "react-icons/fa";
 
 const Footer = () => {
   return (
     <footer className="mt-20 mb-6">
       <div className="w-[95%] max-w-7xl mx-auto">
-        {/* Outer Glow Wrapper */}
         <div className="relative rounded-[32px] p-[1.5px] overflow-hidden group">
-          {/* Rotating Glow */}
           <div
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0
             bg-[conic-gradient(from_0deg,transparent_30%,#f59e0b_50%,transparent_70%)]
@@ -25,7 +18,6 @@ const Footer = () => {
             }}
           />
 
-          {/* Footer Container */}
           <div
             className="relative z-10 rounded-[32px]
             bg-[#050505]
@@ -33,9 +25,7 @@ const Footer = () => {
             bg-[size:20px_20px]
             shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
           >
-            {/* Main Footer */}
             <div className="flex flex-col md:flex-row items-center justify-between gap-8 px-6 py-10">
-              {/* Logo */}
               <Link to="/home" className="flex items-center gap-3">
                 <span className="relative rounded-full p-[1.5px] overflow-hidden group/flogo shrink-0">
                   <div
@@ -59,7 +49,6 @@ const Footer = () => {
                 </span>
               </Link>
 
-              {/* Footer Links */}
               <ul className="flex flex-wrap items-center justify-center gap-8">
                 {["About", "Contact", "Privacy", "Terms"].map((item) => (
                   <li key={item}>
@@ -78,7 +67,6 @@ const Footer = () => {
                 ))}
               </ul>
 
-              {/* Social Icons */}
               <div className="flex items-center gap-3">
                 {[
                   {
@@ -132,7 +120,6 @@ const Footer = () => {
               </div>
             </div>
 
-            {/* Bottom Copyright */}
             <div className="border-t border-neutral-800 py-5">
               <p className="text-center text-xs font-medium text-neutral-500 tracking-wide">
                 © 2026 InstantFoodie. All rights reserved.

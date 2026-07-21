@@ -16,9 +16,17 @@ import { useAuth } from "../../context/AuthContext";
 import { placeOrder } from "../../services/order.service";
 
 const paymentOptions = [
-  { key: "COD", label: "Cash on Delivery", icon: <HiOutlineBanknotes size={20} /> },
+  {
+    key: "COD",
+    label: "Cash on Delivery",
+    icon: <HiOutlineBanknotes size={20} />,
+  },
   { key: "UPI", label: "UPI", icon: <HiOutlineDevicePhoneMobile size={20} /> },
-  { key: "CARD", label: "Credit / Debit Card", icon: <HiOutlineCreditCard size={20} /> },
+  {
+    key: "CARD",
+    label: "Credit / Debit Card",
+    icon: <HiOutlineCreditCard size={20} />,
+  },
 ];
 
 const Checkout = () => {
@@ -109,8 +117,10 @@ const Checkout = () => {
     const errors = {};
     if (!newAddress.fullName.trim()) errors.fullName = "Full name is required";
     if (!newAddress.phone.trim()) errors.phone = "Phone number is required";
-    else if (!/^\d{10}$/.test(newAddress.phone.trim())) errors.phone = "Enter a valid 10-digit phone number";
-    if (!newAddress.address.trim()) errors.address = "Delivery address is required";
+    else if (!/^\d{10}$/.test(newAddress.phone.trim()))
+      errors.phone = "Enter a valid 10-digit phone number";
+    if (!newAddress.address.trim())
+      errors.address = "Delivery address is required";
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -125,7 +135,11 @@ const Checkout = () => {
     if (editingAddressId) {
       // Editing an existing saved address
       setSavedAddresses((prev) =>
-        prev.map((a) => (a.id === editingAddressId ? { id: editingAddressId, ...newAddress } : a))
+        prev.map((a) =>
+          a.id === editingAddressId
+            ? { id: editingAddressId, ...newAddress }
+            : a,
+        ),
       );
       setSelectedAddressId(editingAddressId);
     } else {
@@ -187,25 +201,30 @@ const Checkout = () => {
         try {
           const response = await fetch(
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
-            { headers: { Accept: "application/json" } }
+            { headers: { Accept: "application/json" } },
           );
           const data = await response.json();
 
-          const formattedAddress = data?.display_name || `Lat: ${latitude}, Lng: ${longitude}`;
+          const formattedAddress =
+            data?.display_name || `Lat: ${latitude}, Lng: ${longitude}`;
 
           setNewAddress((prev) => ({ ...prev, address: formattedAddress }));
         } catch (err) {
           console.log("Reverse geocoding failed:", err);
-          setLocationError("Could not fetch address for your location. Please enter it manually.");
+          setLocationError(
+            "Could not fetch address for your location. Please enter it manually.",
+          );
         } finally {
           setLocating(false);
         }
       },
       (error) => {
         console.log("Geolocation error:", error);
-        setLocationError("Could not access your location. Please allow location permission or enter address manually.");
+        setLocationError(
+          "Could not access your location. Please allow location permission or enter address manually.",
+        );
         setLocating(false);
-      }
+      },
     );
   };
 
@@ -217,13 +236,17 @@ const Checkout = () => {
     }
   };
 
-  const selectedAddress = savedAddresses.find((a) => a.id === selectedAddressId);
+  const selectedAddress = savedAddresses.find(
+    (a) => a.id === selectedAddressId,
+  );
 
   const handlePlaceOrder = async () => {
     if (cartItems.length === 0) return;
 
     if (!selectedAddress) {
-      setOrderError("Please select or add a delivery address before placing the order.");
+      setOrderError(
+        "Please select or add a delivery address before placing the order.",
+      );
       return;
     }
 
@@ -247,7 +270,9 @@ const Checkout = () => {
       await clearCart();
       navigate("/order");
     } catch (error) {
-      setOrderError(error?.response?.data?.message || "Order failed. Please try again.");
+      setOrderError(
+        error?.response?.data?.message || "Order failed. Please try again.",
+      );
       console.log("Full Error:", error);
     } finally {
       setPlacingOrder(false);
@@ -259,8 +284,12 @@ const Checkout = () => {
       <div className="min-h-screen bg-[#050505]">
         <Navbar cartCount={cartCount} />
         <div className="w-[95%] max-w-3xl mx-auto mt-12 pb-20 px-2 sm:px-4 text-center">
-          <h2 className="text-3xl font-black text-white mb-4">Your cart is empty</h2>
-          <p className="text-neutral-400 mb-6">Add some items to your cart before checking out.</p>
+          <h2 className="text-3xl font-black text-white mb-4">
+            Your cart is empty
+          </h2>
+          <p className="text-neutral-400 mb-6">
+            Add some items to your cart before checking out.
+          </p>
           <button
             onClick={() => navigate("/home")}
             className="bg-amber-500 hover:bg-amber-400 text-neutral-950 font-black px-6 py-3 rounded-2xl transition-all active:scale-95"
@@ -277,7 +306,6 @@ const Checkout = () => {
       <Navbar cartCount={cartCount} />
 
       <div className="w-[95%] max-w-6xl mx-auto mt-12 pb-20 px-2 sm:px-4">
-
         {/* Heading */}
         <div className="mb-10">
           <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
@@ -289,16 +317,16 @@ const Checkout = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
           {/* Left: Address + Payment */}
           <div className="lg:col-span-2 flex flex-col gap-6">
-
             {/* Delivery address card */}
             <div className="rounded-2xl bg-zinc-900/90 backdrop-blur-xl border border-neutral-800 p-5 sm:p-6">
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-2">
                   <HiOutlineHome className="text-amber-500" size={22} />
-                  <h3 className="text-lg font-black text-white">Delivery Address</h3>
+                  <h3 className="text-lg font-black text-white">
+                    Delivery Address
+                  </h3>
                 </div>
 
                 {!isAddingNew && (
@@ -329,7 +357,9 @@ const Checkout = () => {
                     >
                       <span
                         className={`mt-1 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                          selectedAddressId === addr.id ? "border-amber-500" : "border-neutral-700"
+                          selectedAddressId === addr.id
+                            ? "border-amber-500"
+                            : "border-neutral-700"
                         }`}
                       >
                         {selectedAddressId === addr.id && (
@@ -343,9 +373,15 @@ const Checkout = () => {
                             {addr.label}
                           </span>
                         </div>
-                        <p className="text-white font-bold mt-1">{addr.fullName}</p>
-                        <p className="text-neutral-400 text-sm mt-0.5">{addr.address}</p>
-                        <p className="text-neutral-400 text-sm mt-0.5">Phone: {addr.phone}</p>
+                        <p className="text-white font-bold mt-1">
+                          {addr.fullName}
+                        </p>
+                        <p className="text-neutral-400 text-sm mt-0.5">
+                          {addr.address}
+                        </p>
+                        <p className="text-neutral-400 text-sm mt-0.5">
+                          Phone: {addr.phone}
+                        </p>
                       </div>
 
                       <div className="flex items-center gap-3 shrink-0">
@@ -391,13 +427,17 @@ const Checkout = () => {
                   )}
 
                   <div>
-                    <label className="text-sm text-neutral-400 mb-1.5 block">Label</label>
+                    <label className="text-sm text-neutral-400 mb-1.5 block">
+                      Label
+                    </label>
                     <div className="flex gap-2">
                       {["Home", "Office", "Other"].map((label) => (
                         <button
                           key={label}
                           type="button"
-                          onClick={() => setNewAddress((prev) => ({ ...prev, label }))}
+                          onClick={() =>
+                            setNewAddress((prev) => ({ ...prev, label }))
+                          }
                           className={`px-4 py-2 rounded-full text-sm font-semibold border transition-colors ${
                             newAddress.label === label
                               ? "border-amber-500 bg-amber-500/10 text-white"
@@ -411,7 +451,9 @@ const Checkout = () => {
                   </div>
 
                   <div>
-                    <label className="text-sm text-neutral-400 mb-1.5 block">Full Name</label>
+                    <label className="text-sm text-neutral-400 mb-1.5 block">
+                      Full Name
+                    </label>
                     <input
                       type="text"
                       value={newAddress.fullName}
@@ -420,12 +462,16 @@ const Checkout = () => {
                       className="w-full bg-zinc-950 border border-neutral-800 focus:border-amber-500 outline-none rounded-xl px-4 py-3 text-white placeholder:text-neutral-600 transition-colors"
                     />
                     {formErrors.fullName && (
-                      <p className="text-red-400 text-xs mt-1.5">{formErrors.fullName}</p>
+                      <p className="text-red-400 text-xs mt-1.5">
+                        {formErrors.fullName}
+                      </p>
                     )}
                   </div>
 
                   <div>
-                    <label className="text-sm text-neutral-400 mb-1.5 block">Phone Number</label>
+                    <label className="text-sm text-neutral-400 mb-1.5 block">
+                      Phone Number
+                    </label>
                     <input
                       type="tel"
                       value={newAddress.phone}
@@ -434,13 +480,17 @@ const Checkout = () => {
                       className="w-full bg-zinc-950 border border-neutral-800 focus:border-amber-500 outline-none rounded-xl px-4 py-3 text-white placeholder:text-neutral-600 transition-colors"
                     />
                     {formErrors.phone && (
-                      <p className="text-red-400 text-xs mt-1.5">{formErrors.phone}</p>
+                      <p className="text-red-400 text-xs mt-1.5">
+                        {formErrors.phone}
+                      </p>
                     )}
                   </div>
 
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
-                      <label className="text-sm text-neutral-400 block">Delivery Address</label>
+                      <label className="text-sm text-neutral-400 block">
+                        Delivery Address
+                      </label>
                       <button
                         type="button"
                         onClick={handleUseCurrentLocation}
@@ -459,10 +509,14 @@ const Checkout = () => {
                       className="w-full bg-zinc-950 border border-neutral-800 focus:border-amber-500 outline-none rounded-xl px-4 py-3 text-white placeholder:text-neutral-600 resize-none transition-colors"
                     />
                     {formErrors.address && (
-                      <p className="text-red-400 text-xs mt-1.5">{formErrors.address}</p>
+                      <p className="text-red-400 text-xs mt-1.5">
+                        {formErrors.address}
+                      </p>
                     )}
                     {locationError && (
-                      <p className="text-red-400 text-xs mt-1.5">{locationError}</p>
+                      <p className="text-red-400 text-xs mt-1.5">
+                        {locationError}
+                      </p>
                     )}
                   </div>
 
@@ -488,11 +542,12 @@ const Checkout = () => {
               )}
             </div>
 
-            {/* Payment method card */}
             <div className="rounded-2xl bg-zinc-900/90 backdrop-blur-xl border border-neutral-800 p-5 sm:p-6">
               <div className="flex items-center gap-2 mb-5">
                 <HiOutlineCreditCard className="text-amber-500" size={22} />
-                <h3 className="text-lg font-black text-white">Payment Method</h3>
+                <h3 className="text-lg font-black text-white">
+                  Payment Method
+                </h3>
               </div>
 
               <div className="flex flex-col gap-3">
@@ -507,13 +562,21 @@ const Checkout = () => {
                         : "border-neutral-800 bg-zinc-950 text-neutral-300 hover:border-neutral-700"
                     }`}
                   >
-                    <span className={paymentMethod === option.key ? "text-amber-500" : "text-neutral-500"}>
+                    <span
+                      className={
+                        paymentMethod === option.key
+                          ? "text-amber-500"
+                          : "text-neutral-500"
+                      }
+                    >
                       {option.icon}
                     </span>
                     <span className="font-semibold">{option.label}</span>
                     <span
                       className={`ml-auto w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                        paymentMethod === option.key ? "border-amber-500" : "border-neutral-700"
+                        paymentMethod === option.key
+                          ? "border-amber-500"
+                          : "border-neutral-700"
                       }`}
                     >
                       {paymentMethod === option.key && (
@@ -526,20 +589,23 @@ const Checkout = () => {
             </div>
           </div>
 
-          {/* Right: Order summary */}
           <div className="relative rounded-3xl p-[1.5px] overflow-hidden group h-fit sticky top-28 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.9)] hover:shadow-[0_30px_60px_-10px_rgba(245,158,11,0.2)] transition-all duration-500">
-
             <div className="absolute inset-0 z-0 bg-[conic-gradient(from_0deg,transparent_40%,#f59e0b_50%,transparent_60%)] opacity-50 group-hover:opacity-100 transition-opacity duration-500 scale-110 animate-streak-active pointer-events-none" />
 
             <div className="relative z-10 bg-[#121212]/95 backdrop-blur-xl rounded-[23px] p-6">
-
-              <h3 className="text-lg font-black text-white mb-5">Order Summary</h3>
+              <h3 className="text-lg font-black text-white mb-5">
+                Order Summary
+              </h3>
 
               <div className="flex flex-col gap-3 mb-5 max-h-64 overflow-y-auto pr-1">
                 {cartItems.map((item) => (
-                  <div key={item._id} className="flex items-center justify-between text-sm gap-3">
+                  <div
+                    key={item._id}
+                    className="flex items-center justify-between text-sm gap-3"
+                  >
                     <span className="text-neutral-300 truncate">
-                      {item.foodItemId.name} <span className="text-neutral-500">x{item.quantity}</span>
+                      {item.foodItemId.name}{" "}
+                      <span className="text-neutral-500">x{item.quantity}</span>
                     </span>
                     <span className="text-white font-semibold shrink-0">
                       ₹{(item.foodItemId.price * item.quantity).toFixed(2)}
@@ -552,18 +618,24 @@ const Checkout = () => {
 
               <div className="flex items-center justify-between text-sm text-neutral-400 mb-3">
                 <span>Subtotal ({cartCount} items)</span>
-                <span className="text-white font-semibold">₹{cartTotal.toFixed(2)}</span>
+                <span className="text-white font-semibold">
+                  ₹{cartTotal.toFixed(2)}
+                </span>
               </div>
               <div className="flex items-center justify-between text-sm text-neutral-400 mb-5">
                 <span>Delivery fee</span>
-                <span className="text-white font-semibold">₹{deliveryFee.toFixed(2)}</span>
+                <span className="text-white font-semibold">
+                  ₹{deliveryFee.toFixed(2)}
+                </span>
               </div>
 
               <hr className="border-neutral-800 mb-5" />
 
               <div className="flex items-center justify-between text-base font-black text-white mb-6">
                 <span>Total</span>
-                <span className="text-amber-500 text-xl">₹{grandTotal.toFixed(2)}</span>
+                <span className="text-amber-500 text-xl">
+                  ₹{grandTotal.toFixed(2)}
+                </span>
               </div>
 
               {orderError && (

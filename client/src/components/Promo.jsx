@@ -11,13 +11,48 @@ import promo6 from "../assets/promo6.png";
 import promo7 from "../assets/promo7.png";
 
 const slides = [
-  { id: 1, image: promo1, title: "50% OFF your first order", subtitle: "Use code WELCOME50 at checkout" },
-  { id: 2, image: promo2, title: "Free delivery this weekend", subtitle: "On all orders above ₹299" },
-  { id: 3, image: promo3, title: "New: Midnight Cravings menu", subtitle: "Late-night favorites, delivered fast" },
-  { id: 4, image: promo4, title: "New: Midnight Cravings menu", subtitle: "Late-night favorites, delivered fast" },
-  { id: 5, image: promo5, title: "New: Midnight Cravings menu", subtitle: "Late-night favorites, delivered fast" },
-  { id: 6, image: promo6, title: "New: Midnight Cravings menu", subtitle: "Late-night favorites, delivered fast" },
-  { id: 7, image: promo7, title: "New: Midnight Cravings menu", subtitle: "Late-night favorites, delivered fast" },
+  {
+    id: 1,
+    image: promo1,
+    title: "50% OFF your first order",
+    subtitle: "Use code WELCOME50 at checkout",
+  },
+  {
+    id: 2,
+    image: promo2,
+    title: "Free delivery this weekend",
+    subtitle: "On all orders above ₹299",
+  },
+  {
+    id: 3,
+    image: promo3,
+    title: "New: Midnight Cravings menu",
+    subtitle: "Late-night favorites, delivered fast",
+  },
+  {
+    id: 4,
+    image: promo4,
+    title: "New: Midnight Cravings menu",
+    subtitle: "Late-night favorites, delivered fast",
+  },
+  {
+    id: 5,
+    image: promo5,
+    title: "New: Midnight Cravings menu",
+    subtitle: "Late-night favorites, delivered fast",
+  },
+  {
+    id: 6,
+    image: promo6,
+    title: "New: Midnight Cravings menu",
+    subtitle: "Late-night favorites, delivered fast",
+  },
+  {
+    id: 7,
+    image: promo7,
+    title: "New: Midnight Cravings menu",
+    subtitle: "Late-night favorites, delivered fast",
+  },
 ];
 
 const AUTO_SCROLL_MS = 4000;
@@ -41,15 +76,12 @@ const Promo = () => {
   const slide = slides[index];
 
   return (
-    /* Outer wrapper: holds the glow ring behind the whole carousel — same pattern as Navbar */
     <div className="relative w-[95%] max-w-7xl mx-auto mt-6 rounded-[28px] p-[1.5px] overflow-hidden group/promo shadow-[0_24px_50px_rgba(0,0,0,0.6)]">
-      {/* Rotating glow ring */}
       <div
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 bg-[conic-gradient(from_0deg,transparent_30%,#f59e0b_50%,transparent_70%)] opacity-60 group-hover/promo:opacity-100 transition-opacity duration-500 animate-streak-active pointer-events-none"
         style={{ width: "200%", paddingBottom: "200%" }}
       />
 
-      {/* Inner carousel housing */}
       <div className="relative z-10 rounded-[28px] border border-neutral-900 overflow-hidden h-48 sm:h-72 md:h-[450px]">
         <AnimatePresence mode="wait">
           <motion.div

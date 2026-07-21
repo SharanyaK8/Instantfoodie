@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { HiCheckCircle, HiOutlineClock, HiOutlineXCircle, HiArrowPath } from "react-icons/hi2";
+import {
+  HiCheckCircle,
+  HiOutlineClock,
+  HiOutlineXCircle,
+  HiArrowPath,
+} from "react-icons/hi2";
 import Navbar from "../../components/Navbar";
 import { useCart } from "../../context/CartContext";
 import { getMyOrders, cancelOrder } from "../../services/order.service";
@@ -12,10 +17,7 @@ const steps = [
   { key: "Delivered", label: "Delivered" },
 ];
 
-const cancellableStatuses = [
-  "Placed",
-  "Preparing",
-];
+const cancellableStatuses = ["Placed", "Preparing"];
 
 const filterTabs = [
   { key: "all", label: "All" },
@@ -37,11 +39,9 @@ const Order = () => {
   const [cancellingId, setCancellingId] = useState(null);
   const [activeFilter, setActiveFilter] = useState("all");
 
-
   useEffect(() => {
     fetchOrders();
   }, []);
-
 
   async function fetchOrders() {
     setLoading(true);
@@ -50,13 +50,15 @@ const Order = () => {
       const data = await getMyOrders();
       setOrders(data.orders || []);
     } catch (error) {
-      setFetchError(error?.response?.data?.message || "Couldn't load your orders. Please try again.");
+      setFetchError(
+        error?.response?.data?.message ||
+          "Couldn't load your orders. Please try again.",
+      );
       console.log(error);
     } finally {
       setLoading(false);
     }
   }
-
 
   async function handleCancelOrder(orderId) {
     setCancellingId(orderId);
@@ -71,20 +73,18 @@ const Order = () => {
     }
   }
 
-
   const filteredOrders = orders.filter((order) => {
     if (activeFilter === "all") return true;
-    if (activeFilter === "active") return activeStatuses.includes(order.orderStatus);
+    if (activeFilter === "active")
+      return activeStatuses.includes(order.orderStatus);
     return order.orderStatus === activeFilter;
   });
-
 
   return (
     <div className="min-h-screen bg-[#050505]">
       <Navbar cartCount={cartCount} />
 
       <div className="w-[95%] max-w-7xl mx-auto mt-12 pb-20 px-2 sm:px-4">
-
         {/* Heading */}
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>
@@ -108,7 +108,6 @@ const Order = () => {
           )}
         </div>
 
-        {/* Status filter tabs */}
         {!loading && !fetchError && orders.length > 0 && (
           <div className="flex items-center gap-2 mb-8 overflow-x-auto scrollbar-hide pb-1">
             {filterTabs.map((tab) => (
@@ -128,16 +127,15 @@ const Order = () => {
         )}
 
         {loading ? (
-
           <div className="flex flex-col items-center justify-center py-24">
             <div className="w-10 h-10 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mb-4" />
             <p className="text-neutral-400 text-sm">Loading your orders...</p>
           </div>
-
         ) : fetchError ? (
-
           <div className="col-span-full w-full flex flex-col items-center justify-center py-16 px-6 border-2 border-red-500/20 rounded-[28px] bg-red-500/5">
-            <p className="text-red-400 font-semibold text-center">{fetchError}</p>
+            <p className="text-red-400 font-semibold text-center">
+              {fetchError}
+            </p>
             <button
               onClick={fetchOrders}
               className="mt-4 px-5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-semibold transition-all"
@@ -145,11 +143,8 @@ const Order = () => {
               Try again
             </button>
           </div>
-
         ) : orders.length === 0 ? (
-
           <div className="col-span-full w-full flex flex-col items-center justify-center py-16 px-6 border-2 border-amber-500/20 rounded-[28px] bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.06),transparent_60%)] bg-zinc-900/40 backdrop-blur-md shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9),0_0_50px_-10px_rgba(245,158,11,0.15)] border-dashed">
-
             <div className="w-16 h-16 rounded-full bg-zinc-950 flex items-center justify-center border border-amber-500/30 mb-5 shadow-[0_10px_30px_rgba(0,0,0,0.8),0_0_20px_rgba(245,158,11,0.2)]">
               <span className="text-2xl animate-pulse">📦</span>
             </div>
@@ -159,42 +154,32 @@ const Order = () => {
             </h3>
 
             <p className="text-neutral-400 text-sm mt-3 max-w-sm text-center">
-              Your placed orders will appear here once you complete your first checkout.
+              Your placed orders will appear here once you complete your first
+              checkout.
             </p>
-
           </div>
-
         ) : filteredOrders.length === 0 ? (
-
           <div className="col-span-full w-full flex flex-col items-center justify-center py-16 px-6 border-2 border-neutral-800 rounded-[28px] bg-zinc-900/40">
             <p className="text-neutral-400 font-semibold">
               No orders in this category.
             </p>
           </div>
-
         ) : (
-
           filteredOrders.map((order) => {
-
             const activeStepIndex = steps.findIndex(
-              (s) => s.key === order.orderStatus
+              (s) => s.key === order.orderStatus,
             );
 
             return (
-
               <div
                 key={order.orderId}
                 className="relative rounded-3xl p-[1.5px] overflow-hidden transition-all duration-500 group mb-8 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.9)] hover:shadow-[0_30px_60px_-10px_rgba(245,158,11,0.2)] hover:-translate-y-1"
               >
-
                 <div className="absolute inset-0 z-0 bg-[conic-gradient(from_0deg,transparent_40%,#f59e0b_50%,transparent_60%)] opacity-50 group-hover:opacity-100 transition-opacity duration-500 scale-110 animate-streak-active pointer-events-none" />
 
                 <div className="relative z-10 bg-[#121212]/95 backdrop-blur-xl rounded-[23px] p-6">
-
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-
                     <div>
-
                       <h3 className="text-white text-xl font-black tracking-tight">
                         Order #{order.orderId}
                       </h3>
@@ -208,28 +193,27 @@ const Order = () => {
                           minute: "2-digit",
                         })}
                       </p>
-
                     </div>
 
                     <div className="flex items-center gap-3">
-                      {order.orderStatus !== "Cancelled" && order.orderStatus !== "Delivered" && (
-                        <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                          {order.orderStatus}
-                        </span>
-                      )}
+                      {order.orderStatus !== "Cancelled" &&
+                        order.orderStatus !== "Delivered" && (
+                          <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                            {order.orderStatus}
+                          </span>
+                        )}
                       <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
-                        <HiOutlineClock
-                          size={22}
-                          className="text-amber-500"
-                        />
+                        <HiOutlineClock size={22} className="text-amber-500" />
                       </div>
                     </div>
                   </div>
 
-
                   {order.orderStatus === "Cancelled" ? (
                     <div className="flex items-center gap-3 mb-10 bg-red-500/10 border border-red-500/20 rounded-2xl px-5 py-4">
-                      <HiOutlineXCircle size={22} className="text-red-400 shrink-0" />
+                      <HiOutlineXCircle
+                        size={22}
+                        className="text-red-400 shrink-0"
+                      />
                       <p className="text-red-400 font-bold text-sm">
                         This order was cancelled.
                       </p>
@@ -243,18 +227,20 @@ const Order = () => {
                         >
                           {i !== steps.length - 1 && (
                             <div
-                              className={`absolute top-5 left-1/2 w-full h-[2px] ${i < activeStepIndex
+                              className={`absolute top-5 left-1/2 w-full h-[2px] ${
+                                i < activeStepIndex
                                   ? "bg-amber-500"
                                   : "bg-neutral-800"
-                                }`}
+                              }`}
                             />
                           )}
 
                           <div
-                            className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300 ${i <= activeStepIndex
+                            className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300 ${
+                              i <= activeStepIndex
                                 ? "bg-amber-500 text-neutral-950 shadow-lg shadow-amber-500/30"
                                 : "bg-neutral-900 border border-neutral-700 text-neutral-500"
-                              }`}
+                            }`}
                           >
                             {i <= activeStepIndex ? (
                               <HiCheckCircle size={18} />
@@ -264,10 +250,11 @@ const Order = () => {
                           </div>
 
                           <p
-                            className={`mt-3 text-[10px] sm:text-xs px-1 font-semibold text-center ${i <= activeStepIndex
+                            className={`mt-3 text-[10px] sm:text-xs px-1 font-semibold text-center ${
+                              i <= activeStepIndex
                                 ? "text-white"
                                 : "text-neutral-500"
-                              }`}
+                            }`}
                           >
                             {step.label}
                           </p>
@@ -321,8 +308,8 @@ const Order = () => {
                   </button>
 
                   {/* Cancel Order — only while Placed or Preparing */}
-                  {cancellableStatuses.includes(order.orderStatus) && (
-                    confirmingId === order.orderId ? (
+                  {cancellableStatuses.includes(order.orderStatus) &&
+                    (confirmingId === order.orderId ? (
                       <div className="mt-5 flex flex-col sm:flex-row items-center gap-3 bg-red-500/5 border border-red-500/20 rounded-2xl px-5 py-4">
                         <p className="text-sm text-neutral-300 font-semibold flex-1 text-center sm:text-left">
                           Cancel this order? This can't be undone.
@@ -333,7 +320,9 @@ const Order = () => {
                             disabled={cancellingId === order.orderId}
                             className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-400 text-white font-bold text-sm transition-all disabled:opacity-50"
                           >
-                            {cancellingId === order.orderId ? "Cancelling..." : "Yes, Cancel"}
+                            {cancellingId === order.orderId
+                              ? "Cancelling..."
+                              : "Yes, Cancel"}
                           </button>
                           <button
                             onClick={() => setConfirmingId(null)}
@@ -351,8 +340,7 @@ const Order = () => {
                         <HiOutlineXCircle size={18} />
                         Cancel Order
                       </button>
-                    )
-                  )}
+                    ))}
                 </div>
               </div>
             );
@@ -361,7 +349,6 @@ const Order = () => {
       </div>
     </div>
   );
-
 };
 
 export default Order;
