@@ -56,8 +56,8 @@ function RestaurantMenu() {
         field === "isVeg"
           ? e.target.value === "true"
           : field === "price" || field === "preparationTime"
-          ? e.target.value
-          : e.target.value;
+            ? e.target.value
+            : e.target.value;
       setForm((prev) => ({ ...prev, [field]: value }));
     };
   }
@@ -113,7 +113,7 @@ function RestaurantMenu() {
       await loadItems();
     } catch (err) {
       setError(
-        err?.response?.data?.message || "Something went wrong while saving."
+        err?.response?.data?.message || "Something went wrong while saving.",
       );
     } finally {
       setSaving(false);

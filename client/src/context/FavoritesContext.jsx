@@ -11,12 +11,14 @@ export const FavoritesProvider = ({ children }) => {
     setFavorites((prev) =>
       prev.some((f) => f._id === dish._id)
         ? prev.filter((f) => f._id !== dish._id)
-        : [...prev, dish]
+        : [...prev, dish],
     );
   };
 
   return (
-    <FavoritesContext.Provider value={{ favorites, isFavorite, toggleFavorite }}>
+    <FavoritesContext.Provider
+      value={{ favorites, isFavorite, toggleFavorite }}
+    >
       {children}
     </FavoritesContext.Provider>
   );

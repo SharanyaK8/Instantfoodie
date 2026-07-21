@@ -1,179 +1,301 @@
-import bcrypt from 'bcrypt';
-import User from '../models/user.js';
-import Token from '../utils/Token.js';
+import bcrypt from "bcrypt";
+import User from "../models/user.js";
+import Restaurant from "../models/restaurant.js";
+import FoodItem from "../models/foodItem.js";
+import Order from "../models/order.js";
+import Token from "../utils/Token.js";
 
 const cookieOptions = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax',
-    maxAge: 7 * 24 * 60 * 60 * 1000
-};
-
-export const adminRegister = async (req, res) => {
-    // Expecting fullName from the request body
-    let { fullName, email, password } = req.body;
-    try {
-        if (!fullName || !email || !password) {
-            return res.status(400).json({ message: 'Please fill all the fields' });
-        }
-
-        const existingAdmin = await User.findOne({ role: "admin" });
-        if (existingAdmin) {
-            return res.status(400).json({ success: false, message: 'Admin already exists' });
-        }
-
-        const userExists = await User.findOne({ email });
-        if (userExists) {
-            return res.status(400).json({ message: 'User already exists' });
-        }
-
-        if (password.length < 6) {
-            return res.status(400).json({ message: 'Minimum 6 characters required' });
-        }
-
-        const hash = await bcrypt.hash(password, 10);
-        const createUser = await User.create({
-            fullName,
-            email,
-            password: hash,
-            role: "admin" // Default role is "admin"
-        });
-
-        const token = Token(createUser.email, createUser._id, createUser.role);
-        res.cookie("Token", token, cookieOptions);
-
-        return res.status(201).json({
-            message: 'User created successfully',
-            user: {
-                id: createUser._id,
-                fullName: createUser.fullName,
-                email: createUser.email,
-                role: createUser.role
-            }
-        });
-    } catch (e) {
-        return res.status(500).json({ message: e.message });
-    }
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
 export const adminLogin = async (req, res) => {
-    let { email, password } = req.body;
-    try {
-        if (!email || !password) {
-            return res.status(400).json({ message: 'Please fill all the fields' });
-        }
+  try {
+    const { email, password } = req.body;
 
-        let user = await User.findOne({ email: email });
-        if (!user) {
-            return res.status(404).json({ message: 'No user Found' });
-        }
-
-        if (user.role !== 'admin') {
-            return res.status(403).json({ message: 'Only Admin Allowed' });
-        }
-
-        let check = await bcrypt.compare(password, user.password);
-        if (check) {
-            // Token utility is synchronous, no await needed
-            const token = Token(user.email, user._id, user.role);
-
-            res.cookie("Token", token, cookieOptions);
-
-            return res.status(200).json({
-                message: 'loggedIn successful',
-                user: {
-                    id: user._id,
-                    fullName: user.fullName,
-                    email: user.email,
-                    role: user.role
-                }
-            });
-        }
-        else {
-            return res.status(401).json({ message: 'Incorrect credentials' });
-        }
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Please fill all the fields",
+      });
     }
-}
 
-export const adminLogout = async (req, res) => {
-    try {
-        // Clear cookie using the exact same options context it was created with
-        res.clearCookie("Token", {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax'
-        });
-        return res.status(200).json({ message: 'logout successful' });
+    const admin = await User.findOne({ email });
 
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        message: "Admin not found",
+      });
     }
+
+    if (admin.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. Only admin can login.",
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, admin.password);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Incorrect credentials",
+      });
+    }
+
+    const token = Token(admin.email, admin._id, admin.role);
+
+    res.cookie("Token", token, cookieOptions);
+
+    return res.status(200).json({
+      success: true,
+      message: "Admin logged in successfully",
+      user: {
+        id: admin._id,
+        fullName: admin.fullName,
+        email: admin.email,
+        role: admin.role,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
-export const getUsers = async (req, res) => {
-    try {
-        if (req.user.role !== 'admin') {
-            return res.status(403).json({ message: 'Only Admin Allowed' });
-        }
+export const adminLogout = async (req, res) => {
+  try {
+    res.clearCookie("Token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    });
 
-        const users = await User.find({ role: "user" }).select('-password');
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
-    }
-}
+    return res.status(200).json({
+      success: true,
+      message: "Admin logout successful",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
-export const getRestaurants = async (req, res) => {
-    try {
-        if (req.user.role !== 'admin') {
-            return res.status(403).json({ message: 'Only Admin Allowed' });
-        }
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({ role: "user" }).select("-password");
 
-        const restaurants = await User.find({ role: "restaurant" }).select('-password');
-        return res.status(200).json({ restaurants });
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
-    }
-}
+    return res.status(200).json({
+      success: true,
+      count: users.length,
+      users,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 export const getUserById = async (req, res) => {
-    try {
-        const { id } = req.params;
-        if (req.user.role !== 'admin') {
-            return res.status(403).json({ message: 'Only Admin Allowed' });
-        }
+  try {
+    const { id } = req.params;
 
-        const user = await User.findById(id).select('-password');
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
+    const user = await User.findOne({
+      _id: id,
+      role: "user",
+    }).select("-password");
 
-        return res.status(200).json({ success: true, user:user });
-
-
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
     }
-}
 
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 export const deleteUser = async (req, res) => {
-    try {
-        const { id } = req.params;
-        if (req.user.role !== 'admin') {
-            return res.status(403).json({ message: 'Only Admin Allowed' });
-        }
+  try {
+    const { id } = req.params;
 
-        const user = await User.findOneAndDelete({ _id: id })
-        return res.status(200).json({
-            success: true,
-            message: 'User deleted successfully',
-            user: user.fullName
-        });
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
+    const user = await User.findOneAndDelete({
+      _id: id,
+      role: "user",
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
     }
-}
 
+    return res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
+export const getAllRestaurants = async (req, res) => {
+  try {
+    const restaurants = await Restaurant.find().populate("owner", "-password");
+
+    return res.status(200).json({
+      success: true,
+      count: restaurants.length,
+      restaurants,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const updateRestaurantStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const restaurant = await Restaurant.findById(id);
+
+    if (!restaurant) {
+      return res.status(404).json({
+        success: false,
+        message: "Restaurant not found",
+      });
+    }
+
+    restaurant.isOpen = !restaurant.isOpen;
+
+    await restaurant.save();
+
+    return res.status(200).json({
+      success: true,
+      message: `Restaurant is now ${restaurant.isOpen ? "Open" : "Closed"}`,
+      restaurant,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const getAllOrders = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const skip = (page - 1) * limit;
+
+    const totalOrders = await Order.countDocuments();
+
+    const orders = await Order.find()
+      .populate("userId", "-password")
+      .populate("restaurantId")
+      .populate("items.foodItemId")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    return res.status(200).json({
+      success: true,
+      currentPage: page,
+      totalPages: Math.ceil(totalOrders / limit),
+      totalOrders,
+      orders,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const deleteRestaurant = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const restaurant = await Restaurant.findById(id);
+
+    if (!restaurant) {
+      return res.status(404).json({
+        success: false,
+        message: "Restaurant not found",
+      });
+    }
+
+    // Delete all food items belonging to this restaurant
+    await FoodItem.deleteMany({
+      restaurantId: restaurant._id,
+    });
+
+    // Delete the restaurant
+    await Restaurant.findByIdAndDelete(id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Restaurant deleted successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const deleteFoodItem = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const foodItem = await FoodItem.findByIdAndDelete(id);
+
+    if (!foodItem) {
+      return res.status(404).json({
+        success: false,
+        message: "Food item not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Food item deleted successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

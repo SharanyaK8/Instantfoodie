@@ -80,7 +80,7 @@ function RestaurantProfile() {
     } catch (err) {
       setError(
         err?.response?.data?.message ||
-          "Something went wrong while saving your restaurant."
+          "Something went wrong while saving your restaurant.",
       );
     } finally {
       setSaving(false);
@@ -102,7 +102,9 @@ function RestaurantProfile() {
 
       <div className="w-[95%] max-w-2xl mx-auto py-10">
         <h1 className="text-3xl font-black text-white mb-2">
-          {existingRestaurant ? "Update Restaurant Profile" : "Set Up Your Restaurant"}
+          {existingRestaurant
+            ? "Update Restaurant Profile"
+            : "Set Up Your Restaurant"}
         </h1>
         <p className="text-neutral-400 mb-8">
           {existingRestaurant
@@ -194,8 +196,8 @@ function RestaurantProfile() {
             {saving
               ? "Saving..."
               : existingRestaurant
-              ? "Update Restaurant"
-              : "Create Restaurant"}
+                ? "Update Restaurant"
+                : "Create Restaurant"}
           </button>
         </form>
       </div>

@@ -10,7 +10,7 @@ import foodItemsRouter from "./routes/foodItem.route.js";
 import cartRouter from "./routes/cart.route.js";
 import orderRouter from "./routes/order.route.js";
 import adminRouter from "./routes/admin.route.js";
-
+import favouriteRouter from "./routes/favourite.route.js";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -31,9 +31,6 @@ app.use(
   }),
 );
 
-
-// ---------- Routes ----------
-
 app.use("/api/auth", authRouter);
 
 app.use("/api/users", userRouter);
@@ -48,5 +45,6 @@ app.use("/api/order", orderRouter);
 
 app.use("/api/admin", adminRouter);
 
+app.use("/api/favourites", favouriteRouter);
 
 export default app;

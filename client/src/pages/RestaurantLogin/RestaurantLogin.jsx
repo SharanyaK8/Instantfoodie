@@ -57,43 +57,84 @@ const RestaurantLogin = () => {
         <motion.div
           className="absolute w-[280px] h-[280px] sm:w-[430px] sm:h-[430px] z-0 pointer-events-none filter drop-shadow-[0_25px_35px_rgba(0,0,0,0.8)]"
           style={{ clipPath: "polygon(0 0, 100% 0, 100% 58%, 0 46%)" }}
-          initial={{ top: "50%", left: "50%", x: "-50%", y: "-50%", rotate: 0, scale: 1.1 }}
+          initial={{
+            top: "50%",
+            left: "50%",
+            x: "-50%",
+            y: "-50%",
+            rotate: 0,
+            scale: 1.1,
+          }}
           animate={
             isMerging
-              ? { top: "50%", left: "50%", x: "-50%", y: "-50%", rotate: 0, scale: 1.1 }
+              ? {
+                  top: "50%",
+                  left: "50%",
+                  x: "-50%",
+                  y: "-50%",
+                  rotate: 0,
+                  scale: 1.1,
+                }
               : {
-                top: isMobile ? "-25%" : "-40%",
-                left: isMobile ? "-10%" : "-30%",
-                x: "0%",
-                y: "0%",
-                rotate: -18,
-                scale: 1.15,
-              }
+                  top: isMobile ? "-25%" : "-40%",
+                  left: isMobile ? "-10%" : "-30%",
+                  x: "0%",
+                  y: "0%",
+                  rotate: -18,
+                  scale: 1.15,
+                }
           }
           transition={{ type: "spring", stiffness: 80, damping: 14 }}
         >
-          <img src={burgerImg} alt="Burger" className="w-full h-full object-contain" />
+          <img
+            src={burgerImg}
+            alt="Burger"
+            className="w-full h-full object-contain"
+          />
         </motion.div>
 
         <motion.div
           className="absolute w-[280px] h-[280px] sm:w-[430px] sm:h-[430px] z-0 pointer-events-none filter drop-shadow-[0_25px_35px_rgba(0,0,0,0.8)]"
           style={{ clipPath: "polygon(0 44%, 100% 56%, 100% 100%, 0 100%)" }}
-          initial={{ top: "50%", left: "50%", x: "-50%", y: "-50%", rotate: 0, scale: 1.1 }}
+          initial={{
+            top: "50%",
+            left: "50%",
+            x: "-50%",
+            y: "-50%",
+            rotate: 0,
+            scale: 1.1,
+          }}
           animate={
             isMerging
-              ? { top: "50%", left: "50%", x: "-50%", y: "-50%", rotate: 0, scale: 1.1 }
+              ? {
+                  top: "50%",
+                  left: "50%",
+                  x: "-50%",
+                  y: "-50%",
+                  rotate: 0,
+                  scale: 1.1,
+                }
               : {
-                top: isMobile ? "65%" : "45%",
-                left: isMobile ? "40%" : "52%",
-                x: "-20%",
-                y: "5%",
-                rotate: -12,
-                scale: 1.15,
-              }
+                  top: isMobile ? "65%" : "45%",
+                  left: isMobile ? "40%" : "52%",
+                  x: "-20%",
+                  y: "5%",
+                  rotate: -12,
+                  scale: 1.15,
+                }
           }
-          transition={{ type: "spring", stiffness: 80, damping: 14, delay: 0.02 }}
+          transition={{
+            type: "spring",
+            stiffness: 80,
+            damping: 14,
+            delay: 0.02,
+          }}
         >
-          <img src={burgerImg} alt="Burger" className="w-full h-full object-contain" />
+          <img
+            src={burgerImg}
+            alt="Burger"
+            className="w-full h-full object-contain"
+          />
         </motion.div>
 
         <motion.form
@@ -147,7 +188,7 @@ const RestaurantLogin = () => {
           </button>
 
           <p className="text-center text-neutral-400 text-xs sm:text-sm mt-6">
-            Need a customer account?{' '}
+            Need a customer account?{" "}
             <Link
               to="/login"
               onClick={(e) => handleNavClick(e, "/login")}
@@ -157,7 +198,7 @@ const RestaurantLogin = () => {
             </Link>
           </p>
           <p className="text-center text-neutral-400 text-xs sm:text-sm mt-2">
-            Admin?{' '}
+            Admin?{" "}
             <Link
               to="/admin-login"
               onClick={(e) => handleNavClick(e, "/admin-login")}

@@ -20,24 +20,17 @@ export const CartProvider = ({ children }) => {
   };
 
   const getItemQuantity = (foodId) => {
-    const item = cartItems.find(
-      (i) => i.foodItemId?._id === foodId
-    );
+    const item = cartItems.find((i) => i.foodItemId?._id === foodId);
 
     return item ? item.quantity : 0;
   };
 
   const increaseQuantity = async (dish) => {
     try {
-      const existing = cartItems.find(
-        (i) => i.foodItemId?._id === dish._id
-      );
+      const existing = cartItems.find((i) => i.foodItemId?._id === dish._id);
 
       if (existing) {
-        await cartService.updateCart(
-          existing._id,
-          existing.quantity + 1
-        );
+        await cartService.updateCart(existing._id, existing.quantity + 1);
       } else {
         await cartService.addToCart(dish._id, 1);
       }
@@ -50,19 +43,14 @@ export const CartProvider = ({ children }) => {
 
   const decreaseQuantity = async (foodId) => {
     try {
-      const existing = cartItems.find(
-        (i) => i.foodItemId?._id === foodId
-      );
+      const existing = cartItems.find((i) => i.foodItemId?._id === foodId);
 
       if (!existing) return;
 
       if (existing.quantity === 1) {
         await cartService.removeCart(existing._id);
       } else {
-        await cartService.updateCart(
-          existing._id,
-          existing.quantity - 1
-        );
+        await cartService.updateCart(existing._id, existing.quantity - 1);
       }
 
       loadCart();
@@ -81,16 +69,18 @@ export const CartProvider = ({ children }) => {
     loadCart();
   };
 
-  // ===== NEW: reorder items from a past order =====
   const reorderItems = async (items) => {
     try {
       for (const item of items) {
         const existing = cartItems.find(
-          (i) => i.foodItemId?._id === item.foodItemId
+          (i) => i.foodItemId?._id === item.foodItemId,
         );
 
         if (existing) {
-          await cartService.updateCart(existing._id, existing.quantity + item.quantity);
+          await cartService.updateCart(
+            existing._id,
+            existing.quantity + item.quantity,
+          );
         } else {
           await cartService.addToCart(item.foodItemId, item.quantity);
         }
@@ -103,15 +93,11 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const cartCount = cartItems.reduce(
-    (sum, item) => sum + item.quantity,
-    0
-  );
+  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   const cartTotal = cartItems.reduce(
-    (sum, item) =>
-      sum + item.foodItemId.price * item.quantity,
-    0
+    (sum, item) => sum + item.foodItemId.price * item.quantity,
+    0,
   );
 
   return (
