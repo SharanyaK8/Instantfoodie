@@ -165,7 +165,10 @@ export const deleteUser = async (req, res) => {
 
 export const getAllRestaurants = async (req, res) => {
   try {
-    const restaurants = await Restaurant.find().populate("owner", "fullName email");
+    const restaurants = await Restaurant.find().populate(
+      "owner",
+      "fullName email",
+    );
 
     return res.status(200).json({
       success: true,
@@ -319,11 +322,11 @@ export const deleteFoodItem = async (req, res) => {
 };
 
 export const blockUser = async (req, res) => {
-  try{
+  try {
     const { id } = req.params;
-    
+
     const user = await User.findById(id);
-    
+
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -345,22 +348,20 @@ export const blockUser = async (req, res) => {
       success: true,
       message: "User blocked successfully",
     });
-
-  }
-  catch(error) {
+  } catch (error) {
     return res.status(500).json({
       success: false,
       message: error.message,
     });
   }
-}
+};
 
 export const unblockUser = async (req, res) => {
-  try{
+  try {
     const { id } = req.params;
-    
+
     const user = await User.findById(id);
-    
+
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -377,17 +378,15 @@ export const unblockUser = async (req, res) => {
 
     user.isBlocked = false;
     await user.save();
-    
+
     return res.status(200).json({
       success: true,
       message: "User unblocked successfully",
     });
-
-  }
-  catch(error) {
+  } catch (error) {
     return res.status(500).json({
       success: false,
       message: error.message,
     });
   }
-}
+};
