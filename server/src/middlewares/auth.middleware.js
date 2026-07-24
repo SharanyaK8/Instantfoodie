@@ -13,7 +13,9 @@ const authMiddleware = async function (req, res, next) {
 
     const user = await User.findById(decoded._id).select("-password");
 
-    console.log(user);
+    if (!user) {
+      return res.status(401).json({ message: "User no longer exists. Please login again." });
+    }
 
     if (user.isBlocked === true) {
       return res
@@ -21,10 +23,6 @@ const authMiddleware = async function (req, res, next) {
         .json({
           message: "Your account has been blocked. Please contact support.",
         });
-    }
-
-    if (!user) {
-      return res.status(404).json({ message: "User Not Found Retry ...." });
     }
 
     req.user = user;

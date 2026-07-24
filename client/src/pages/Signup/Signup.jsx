@@ -36,6 +36,9 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    console.log("Submitting role:", role); // TEMP: remove after confirming fix
+
     const result = await register({
       fullName,
       email,
@@ -185,7 +188,8 @@ const Signup = () => {
             className="w-full bg-neutral-950/40 rounded-xl px-4 py-3 sm:py-3.5 mb-4 text-white placeholder:text-neutral-600 outline-none border border-neutral-800/80 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all duration-200 text-sm sm:text-base"
           />
 
-          <div className="relative mb-6">
+          {/* Password field — select moved OUT of this wrapper */}
+          <div className="relative mb-4">
             <input
               type={showPassword ? "text" : "password"}
               required
@@ -194,15 +198,6 @@ const Signup = () => {
               placeholder="Password"
               className="w-full bg-neutral-950/40 rounded-xl px-4 py-3 sm:py-3.5 pr-14 text-white placeholder:text-neutral-600 outline-none border border-neutral-800/80 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all duration-200 text-sm sm:text-base"
             />
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full bg-neutral-950/40 rounded-xl px-4 py-3 mb-4 text-white border border-neutral-800 outline-none focus:border-amber-500"
-            >
-              <option value="user">Customer</option>
-
-              <option value="restaurant">Restaurant</option>
-            </select>
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -211,6 +206,16 @@ const Signup = () => {
               {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
             </button>
           </div>
+
+          {/* Role select — now its own standalone block */}
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="w-full bg-neutral-950/40 rounded-xl px-4 py-3 sm:py-3.5 mb-6 text-white border border-neutral-800/80 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all duration-200 text-sm sm:text-base"
+          >
+            <option value="user">Customer</option>
+            <option value="restaurant">Restaurant</option>
+          </select>
 
           <button
             type="submit"

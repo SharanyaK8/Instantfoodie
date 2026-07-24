@@ -12,6 +12,53 @@ const cookieOptions = {
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
+export const adminRegister = async (req, res) => {
+  try {
+    const { fullName, email, password } = req.body;
+
+    if (!fullName || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Please fill all the fields",
+      });
+    }
+
+    const existingAdmin = await User.findOne({ email });
+
+    if (existingAdmin) {
+      return res.status(400).json({
+        success: false,
+        message: "Admin already exists",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const admin = await User.create({
+      fullName,
+      email,
+      password: hashedPassword,
+      role: "admin",
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Admin registered successfully",
+      admin: {
+        id: admin._id,
+        fullName: admin.fullName,
+        email: admin.email,
+        role: admin.role,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 export const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -213,16 +260,57 @@ export const updateRestaurantStatus = async (req, res) => {
   }
 };
 
+// export const getAllOrders = async (req, res) => {
+//   try {
+//     const page = parseInt(req.query.page) || 1;
+//     const limit = parseInt(req.query.limit) || 10;
+
+//     const skip = (page - 1) * limit;
+
+//     const totalOrders = await Order.countDocuments();
+
+//     const orders = await Order.find()
+//       .populate("userId", "-password")
+//       .populate("restaurantId")
+//       .populate("items.foodItemId")
+//       .sort({ createdAt: -1 })
+//       .skip(skip)
+//       .limit(limit);
+
+//     return res.status(200).json({
+//       success: true,
+//       currentPage: page,
+//       totalPages: Math.ceil(totalOrders / limit),
+//       totalOrders,
+//       orders,
+//     });
+//   } catch (error) {
+//     return res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
+
 export const getAllOrders = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-
     const skip = (page - 1) * limit;
 
-    const totalOrders = await Order.countDocuments();
+    const filter = {};
 
-    const orders = await Order.find()
+    if (req.query.status) {
+      filter.orderStatus = req.query.status;
+    }
+
+    if (req.query.restaurantId) {
+      filter.restaurantId = req.query.restaurantId;
+    }
+
+    const totalOrders = await Order.countDocuments(filter);
+
+    const orders = await Order.find(filter)
       .populate("userId", "-password")
       .populate("restaurantId")
       .populate("items.foodItemId")

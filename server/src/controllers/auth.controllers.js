@@ -29,7 +29,7 @@ export const userRegister = async (req, res) => {
 
     if (password.length < 6) {
       return res.status(400).json({
-        message: "Minimum 6 characters required",
+        message: "Minimum 6 characters required user",
       });
     }
 
@@ -82,7 +82,7 @@ export const restaurantRegister = async (req, res) => {
 
     if (password.length < 6) {
       return res.status(400).json({
-        message: "Minimum 6 characters required",
+        message: "Minimum 6 characters required => res",
       });
     }
 

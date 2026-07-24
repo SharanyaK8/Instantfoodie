@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  adminRegister,
   adminLogin,
   adminLogout,
   getAllUsers,
@@ -25,6 +26,7 @@ const router = express.Router();
  * @description Authenticate admin and return JWT token
  * @access Public
  */
+router.post("/register", adminRegister);
 router.post("/login", adminLogin);
 
 // Protected Admin Routes
