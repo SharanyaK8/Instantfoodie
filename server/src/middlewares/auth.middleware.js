@@ -12,6 +12,13 @@ const authMiddleware = async function (req, res, next) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const user = await User.findById(decoded._id).select("-password");
+
+    console.log(user);
+    
+    if (user.isBlocked === true) {
+      return res.status(403).json({ message: "Your account has been blocked. Please contact support." });
+    }
+
     if (!user) {
       return res.status(404).json({ message: "User Not Found Retry ...." });
     }

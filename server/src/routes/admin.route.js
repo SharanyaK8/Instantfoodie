@@ -11,6 +11,8 @@ import {
   deleteRestaurant,
   deleteFoodItem,
   getAllFoodItems,
+  blockUser,
+  unblockUser,
 } from "../controllers/admin.controllers.js";
 
 import authMiddleware from "../middlewares/auth.middleware.js";
@@ -98,5 +100,19 @@ router.get("/orders", getAllOrders);
  * @access Admin
  */
 router.get("/all-food-items", getAllFoodItems);
+
+/**
+ * @route PATCH /api/admin/block-user/:id
+ * @description Block a user account
+ * @access Admin
+ */
+router.patch("/block-user/:id", blockUser);
+
+/**
+ * @route PATCH /api/admin/unblock-user/:id
+ * @description Unblock a user account
+ * @access Admin
+ */
+router.patch("/unblock-user/:id", unblockUser);
 
 export default router;
