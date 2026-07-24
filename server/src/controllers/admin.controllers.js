@@ -165,7 +165,10 @@ export const deleteUser = async (req, res) => {
 
 export const getAllRestaurants = async (req, res) => {
   try {
-    const restaurants = await Restaurant.find().populate("owner", "fullName email");
+    const restaurants = await Restaurant.find().populate(
+      "owner",
+      "fullName email",
+    );
 
     return res.status(200).json({
       success: true,
@@ -309,6 +312,76 @@ export const deleteFoodItem = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Food item deleted successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const blockUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (user.role !== "user") {
+      return res.status(400).json({
+        success: false,
+        message: "Only users and restaurants can be blocked",
+      });
+    }
+
+    user.isBlocked = true;
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "User blocked successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const unblockUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (user.role !== "user") {
+      return res.status(400).json({
+        success: false,
+        message: "Only users and restaurants can be unblocked by admin",
+      });
+    }
+
+    user.isBlocked = false;
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "User unblocked successfully",
     });
   } catch (error) {
     return res.status(500).json({
