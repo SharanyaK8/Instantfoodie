@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  adminRegister,
   adminLogin,
   adminLogout,
   getAllUsers,
@@ -11,6 +12,8 @@ import {
   deleteRestaurant,
   deleteFoodItem,
   getAllFoodItems,
+  blockUser,
+  unblockUser,
 } from "../controllers/admin.controllers.js";
 
 import authMiddleware from "../middlewares/auth.middleware.js";
@@ -23,6 +26,7 @@ const router = express.Router();
  * @description Authenticate admin and return JWT token
  * @access Public
  */
+router.post("/register", adminRegister);
 router.post("/login", adminLogin);
 
 // Protected Admin Routes
@@ -98,5 +102,19 @@ router.get("/orders", getAllOrders);
  * @access Admin
  */
 router.get("/all-food-items", getAllFoodItems);
+
+/**
+ * @route PATCH /api/admin/block-user/:id
+ * @description Block a user account
+ * @access Admin
+ */
+router.patch("/block-user/:id", blockUser);
+
+/**
+ * @route PATCH /api/admin/unblock-user/:id
+ * @description Unblock a user account
+ * @access Admin
+ */
+router.patch("/unblock-user/:id", unblockUser);
 
 export default router;

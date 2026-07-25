@@ -29,7 +29,7 @@ export const userRegister = async (req, res) => {
 
     if (password.length < 6) {
       return res.status(400).json({
-        message: "Minimum 6 characters required",
+        message: "Minimum 6 characters required user",
       });
     }
 
@@ -82,7 +82,7 @@ export const restaurantRegister = async (req, res) => {
 
     if (password.length < 6) {
       return res.status(400).json({
-        message: "Minimum 6 characters required",
+        message: "Minimum 6 characters required => res",
       });
     }
 
@@ -139,6 +139,12 @@ export const userLogin = async (req, res) => {
       });
     }
 
+    if (user.isBlocked) {
+      return res.status(403).json({
+        message: "Your account has been blocked. Please contact support.",
+      });
+    }
+
     const check = await bcrypt.compare(password, user.password);
 
     if (!check) {
@@ -190,6 +196,13 @@ export const restaurantLogin = async (req, res) => {
         message: "Access denied. Invalid Login API.",
       });
     }
+
+    if (user.isBlocked) {
+      return res.status(403).json({
+        message: "Your account has been blocked. Please contact support.",
+      });
+    }
+
 
     const check = await bcrypt.compare(password, user.password);
 
