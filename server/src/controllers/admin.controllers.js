@@ -422,12 +422,12 @@ export const blockUser = async (req, res) => {
       });
     }
 
-    if (user.role !== "user") {
+   if (!["user", "restaurant"].includes(user.role)) {
       return res.status(400).json({
         success: false,
         message: "Only users and restaurants can be blocked",
       });
-    }
+   }
 
     user.isBlocked = true;
     await user.save();
@@ -457,11 +457,11 @@ export const unblockUser = async (req, res) => {
       });
     }
 
-    if (user.role !== "user") {
+    if (!["user", "restaurant"].includes(user.role)) {
       return res.status(400).json({
         success: false,
         message: "Only users and restaurants can be unblocked by admin",
-      });
+     });
     }
 
     user.isBlocked = false;
