@@ -21,24 +21,18 @@ function App() {
     <Routes>
       {/* Unprotected */}
 
-      <Route path="/" element={<Login />} />
+      <Route path="/" element={<Home />} />
 
       <Route path="/login" element={<Login />} />
       <Route path="/restaurant-login" element={<RestaurantLogin />} />
       <Route path="/admin-login" element={<AdminLogin />} />
 
       <Route path="/signup" element={<Signup />} />
+      <Route path="/home" element={<Home />} />
 
       {/* User Protected */}
 
-      <Route
-        path="/home"
-        element={
-          <ProtectedRoute>
-            <Home />
-          </ProtectedRoute>
-        }
-      />
+    
       <Route
         path="/restaurant-menu"
         element={

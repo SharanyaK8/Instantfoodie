@@ -149,29 +149,6 @@ const Login = () => {
             🍔 InstantFoodie
           </h2>
 
-          <div className="mb-6 grid gap-3 sm:grid-cols-3">
-            <button
-              type="button"
-              onClick={(e) => handleNavClick(e, "/login")}
-              className="rounded-2xl bg-amber-500 text-neutral-950 py-3 text-sm font-semibold transition hover:bg-amber-600"
-            >
-              Customer
-            </button>
-            <button
-              type="button"
-              onClick={(e) => handleNavClick(e, "/restaurant-login")}
-              className="rounded-2xl border border-neutral-800 bg-neutral-950/80 text-neutral-200 py-3 text-sm font-semibold transition hover:border-amber-500 hover:bg-neutral-900"
-            >
-              Restaurant
-            </button>
-            <button
-              type="button"
-              onClick={(e) => handleNavClick(e, "/admin-login")}
-              className="rounded-2xl border border-neutral-800 bg-neutral-950/80 text-neutral-200 py-3 text-sm font-semibold transition hover:border-amber-500 hover:bg-neutral-900"
-            >
-              Admin
-            </button>
-          </div>
 
           {error && (
             <p className="text-red-400 text-sm text-center mb-4">{error}</p>
