@@ -53,12 +53,37 @@ export const updateRestaurant = async (req, res) => {
   try {
     const { id } = req.params;
 
+    const {
+      restaurantName,
+      cuisine,
+      description,
+      restaurantAddress,
+      isOpen,
+    } = req.body;
+
+    const updateData = {};
+
+    if (restaurantName !== undefined)
+      updateData.restaurantName = restaurantName;
+
+    if (cuisine !== undefined)
+      updateData.cuisine = cuisine;
+
+    if (description !== undefined)
+      updateData.description = description;
+
+    if (restaurantAddress !== undefined)
+      updateData.restaurantAddress = restaurantAddress;
+
+    if (isOpen !== undefined)
+      updateData.isOpen = isOpen;
+
     const restaurant = await Restaurant.findOneAndUpdate(
       {
         _id: id,
         owner: req.user._id,
       },
-      req.body,
+      updateData,
       {
         new: true,
         runValidators: true,
@@ -72,13 +97,13 @@ export const updateRestaurant = async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Restaurant updated successfully",
       restaurant,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message,
     });

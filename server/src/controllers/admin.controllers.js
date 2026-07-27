@@ -16,6 +16,22 @@ export const adminRegister = async (req, res) => {
   try {
     const { fullName, email, password } = req.body;
 
+    const adminSecret = req.headers["x_admin_secret"];
+
+    if (!adminSecret) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. Admin secret is required.",
+      });
+    }
+
+    if (adminSecret !== process.env.x_admin_secret) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. Invalid admin secret.",
+      });
+    }
+
     if (!fullName || !email || !password) {
       return res.status(400).json({
         success: false,
@@ -422,7 +438,7 @@ export const blockUser = async (req, res) => {
       });
     }
 
-    if (user.role !== "user") {
+    if (!["user", "restaurant"].includes(user.role)) {
       return res.status(400).json({
         success: false,
         message: "Only users and restaurants can be blocked",
@@ -457,7 +473,7 @@ export const unblockUser = async (req, res) => {
       });
     }
 
-    if (user.role !== "user") {
+    if (!["user", "restaurant"].includes(user.role)) {
       return res.status(400).json({
         success: false,
         message: "Only users and restaurants can be unblocked by admin",
