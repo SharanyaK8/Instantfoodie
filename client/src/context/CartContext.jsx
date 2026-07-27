@@ -1,14 +1,21 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import * as cartService from "../services/cart.service";
+import { useAuth } from "./AuthContext";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
+  const { isAuthenticated, loading } = useAuth();
 
   useEffect(() => {
+    if (loading) return; 
+    if (!isAuthenticated) {
+      setCartItems([]); 
+      return;
+    }
     loadCart();
-  }, []);
+  }, [isAuthenticated, loading]);
 
   const loadCart = async () => {
     try {

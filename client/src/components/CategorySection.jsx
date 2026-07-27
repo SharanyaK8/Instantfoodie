@@ -1,6 +1,6 @@
 import { getPublicFoodItems } from "../services/food.service";
 import { useEffect, useState } from "react";
-import { getAllFoodItems } from "../services/food.service";
+import { useNavigate } from "react-router-dom";
 import {
   HiStar,
   HiPlus,
@@ -10,6 +10,7 @@ import {
 } from "react-icons/hi2";
 import { useCart } from "../context/CartContext";
 import { useFavorites } from "../context/FavoritesContext";
+import { useAuth } from "../context/AuthContext";
 
 const CategorySection = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -17,11 +18,13 @@ const CategorySection = () => {
   const [categories, setCategories] = useState([]);
   const { getItemQuantity, increaseQuantity, decreaseQuantity } = useCart();
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchFood() {
       try {
-        const data = await getAllFoodItems();
+        const data = await getPublicFoodItems();
         console.log("Backend Data:", data);
 
         const itemsArray = Array.isArray(data)
@@ -56,6 +59,14 @@ const CategorySection = () => {
     }
     fetchFood();
   }, []);
+
+  const requireAuth = (action) => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+    action();
+  };
 
   const handleCategoryClick = (categoryId) => {
     setSelectedCategory((prev) => (prev === categoryId ? null : categoryId));
@@ -153,7 +164,7 @@ const CategorySection = () => {
                   />
 
                   <button
-                    onClick={() => toggleFavorite(dish)}
+                    onClick={() => requireAuth(() => toggleFavorite(dish))}
                     className="absolute top-3 right-3 w-10 h-10 flex items-center justify-center rounded-full bg-zinc-950/80 border border-white/10 text-white backdrop-blur-md shadow-lg hover:scale-110 active:scale-95 transition-all"
                   >
                     {isFavorite(dish._id) ? (
@@ -169,7 +180,7 @@ const CategorySection = () => {
                   <div className="absolute bottom-3 right-3">
                     {quantity === 0 ? (
                       <button
-                        onClick={() => increaseQuantity(dish)}
+                        onClick={() => requireAuth(() => increaseQuantity(dish))}
                         className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-950/80 border border-white/10 text-white backdrop-blur-md shadow-lg hover:bg-amber-500 hover:text-neutral-950 hover:border-amber-600 transition-all active:scale-95"
                       >
                         <HiPlus size={18} />
@@ -177,7 +188,7 @@ const CategorySection = () => {
                     ) : (
                       <div className="flex items-center gap-3 bg-zinc-950/90 border border-white/10 rounded-full shadow-lg px-2.5 py-1.5 backdrop-blur-md">
                         <button
-                          onClick={() => decreaseQuantity(dish._id)}
+                          onClick={() => requireAuth(() => decreaseQuantity(dish._id))}
                           className="w-7 h-7 flex items-center justify-center rounded-full bg-red-500/20 hover:bg-red-500/30 text-red-400 transition-colors"
                         >
                           <HiMinus size={14} />
@@ -186,7 +197,7 @@ const CategorySection = () => {
                           {quantity}
                         </span>
                         <button
-                          onClick={() => increaseQuantity(dish)}
+                          onClick={() => requireAuth(() => increaseQuantity(dish))}
                           className="w-7 h-7 flex items-center justify-center rounded-full bg-green-500/20 hover:bg-green-500/30 text-green-400 transition-colors"
                         >
                           <HiPlus size={14} />
