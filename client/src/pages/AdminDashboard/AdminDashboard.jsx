@@ -10,6 +10,8 @@ import {
 import {
   getUsers,
   deleteUser,
+  blockUser,
+  unblockUser,
   getRestaurants,
   deleteRestaurant,
   deleteFoodItemAdmin,
@@ -96,6 +98,7 @@ const UsersTab = () => {
   const [status, setStatus] = useState("loading");
   const [users, setUsers] = useState([]);
   const [deletingId, setDeletingId] = useState(null);
+  const [blockingId, setBlockingId] = useState(null);
 
   async function handleDeleteUser(id) {
     if (!window.confirm("Delete this user account? This cannot be undone.")) return;
@@ -104,9 +107,32 @@ const UsersTab = () => {
       await deleteUser(id);
       setUsers((prev) => prev.filter((u) => u._id !== id));
     } catch (err) {
-      console.log("Delete user error:", err);
+      alert("Failed to delete user.");
     } finally {
       setDeletingId(null);
+    }
+  }
+  async function handleBlockToggle(user) {
+    setBlockingId(user._id);
+
+    try {
+      if (user.isBlocked) {
+        await unblockUser(user._id);
+      } else {
+        await blockUser(user._id);
+      }
+
+      setUsers((prev) =>
+        prev.map((u) =>
+          u._id === user._id
+            ? { ...u, isBlocked: !u.isBlocked }
+            : u
+        )
+      );
+    } catch (err) {
+      alert("Failed to update user status.");
+    } finally {
+      setBlockingId(null);
     }
   }
 
@@ -163,13 +189,14 @@ const UsersTab = () => {
             <th className="py-3 pr-4 font-semibold">Email</th>
             <th className="py-3 pr-4 font-semibold">Phone</th>
             <th className="py-3 pr-4 font-semibold">Joined</th>
+            <th className="py-3 pr-4 font-semibold">Status</th>
             <th className="py-3 pr-4 font-semibold">Action</th>
           </tr>
         </thead>
         <tbody>
           {users.length === 0 ? (
             <tr>
-              <td colSpan={5} className="py-6 text-neutral-500 text-center">
+              <td colSpan={6} className="py-6 text-neutral-500 text-center">
                 No customer accounts found.
               </td>
             </tr>
@@ -184,7 +211,34 @@ const UsersTab = () => {
                 <td className="py-3 pr-4 text-neutral-500">
                   {new Date(u.createdAt).toLocaleDateString("en-IN")}
                 </td>
+
                 <td className="py-3 pr-4">
+                  <span
+                    className={`text-xs font-bold px-3 py-1 rounded-full ${u.isBlocked
+                        ? "bg-red-500/10 text-red-400"
+                        : "bg-green-500/10 text-green-400"
+                      }`}
+                  >
+                    {u.isBlocked ? "Blocked" : "Active"}
+                  </span>
+                </td>
+
+                <td className="py-3 pr-4 flex gap-2">
+                  <button
+                    disabled={blockingId === u._id}
+                    onClick={() => handleBlockToggle(u)}
+                    className={`text-xs font-bold rounded-lg px-3 py-1.5 disabled:opacity-50 ${u.isBlocked
+                        ? "border border-green-500 text-green-400"
+                        : "border border-amber-500 text-amber-400"
+                      }`}
+                  >
+                    {blockingId === u._id
+                      ? "..."
+                      : u.isBlocked
+                        ? "Unblock"
+                        : "Block"}
+                  </button>
+
                   <button
                     disabled={deletingId === u._id}
                     onClick={() => handleDeleteUser(u._id)}
@@ -234,7 +288,7 @@ const RestaurantsTab = () => {
       await deleteRestaurant(id);
       setRestaurants((prev) => prev.filter((r) => r._id !== id));
     } catch (err) {
-      console.log("Delete restaurant error:", err);
+      alert("Failed to delete restaurant.");
     } finally {
       setBusyId(null);
     }
@@ -282,11 +336,10 @@ const RestaurantsTab = () => {
                     </td>
                     <td className="py-3 pr-4">
                       <span
-                        className={`text-xs font-bold px-3 py-1 rounded-full ${
-                          r.isOpen
+                        className={`text-xs font-bold px-3 py-1 rounded-full ${r.isOpen
                             ? "bg-green-500/10 text-green-400"
                             : "bg-red-500/10 text-red-400"
-                        }`}
+                          }`}
                       >
                         {r.isOpen ? "Open" : "Closed"}
                       </span>
@@ -485,7 +538,7 @@ const FoodsTab = () => {
 
   useEffect(() => {
     getAllFoodsAdmin()
-      .then((data) => setItems(data.FoodItems || data.foods || []))
+      .then((data) => setItems(data.fooditems || []))
       .catch(() => setError("Failed to load food items — admin foods route may not exist on the backend yet."))
       .finally(() => setLoading(false));
   }, []);
@@ -497,7 +550,7 @@ const FoodsTab = () => {
       await deleteFoodItemAdmin(id);
       setItems((prev) => prev.filter((item) => item._id !== id));
     } catch (err) {
-      console.log("Delete food item error:", err);
+       alert("Failed to delete food item.");
     } finally {
       setDeletingId(null);
     }
