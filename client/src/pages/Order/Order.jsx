@@ -1,21 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  HiCheckCircle,
-  HiOutlineClock,
-  HiOutlineXCircle,
-  HiArrowPath,
-} from "react-icons/hi2";
+import { HiOutlineXCircle, HiArrowPath } from "react-icons/hi2";
 import Navbar from "../../components/Navbar";
 import { useCart } from "../../context/CartContext";
 import { getMyOrders, cancelOrder } from "../../services/order.service";
-
-const steps = [
-  { key: "Placed", label: "Order Placed" },
-  { key: "Preparing", label: "Preparing" },
-  { key: "Out for Delivery", label: "Out for Delivery" },
-  { key: "Delivered", label: "Delivered" },
-];
 
 const cancellableStatuses = ["Placed", "Preparing"];
 
@@ -84,7 +72,7 @@ const Order = () => {
     <div className="min-h-screen bg-[#050505]">
       <Navbar cartCount={cartCount} />
 
-      <div className="w-[95%] max-w-7xl mx-auto mt-12 pb-20 px-2 sm:px-4">
+      <div className="w-[95%] max-w-3xl mx-auto mt-12 pb-20 px-2 sm:px-4">
         {/* Heading */}
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>
@@ -109,7 +97,7 @@ const Order = () => {
         </div>
 
         {!loading && !fetchError && orders.length > 0 && (
-          <div className="flex items-center gap-2 mb-8 overflow-x-auto scrollbar-hide pb-1">
+          <div className="flex items-center gap-2 mb-6 overflow-x-auto scrollbar-hide pb-1">
             {filterTabs.map((tab) => (
               <button
                 key={tab.key}
@@ -165,186 +153,115 @@ const Order = () => {
             </p>
           </div>
         ) : (
-          filteredOrders.map((order) => {
-            const activeStepIndex = steps.findIndex(
-              (s) => s.key === order.orderStatus,
-            );
+          filteredOrders.map((order) => (
+            <div
+              key={order.orderId}
+              className="relative rounded-2xl p-[1px] overflow-hidden transition-all duration-300 group mb-4 shadow-[0_15px_30px_-10px_rgba(0,0,0,0.8)] hover:shadow-[0_15px_30px_-8px_rgba(245,158,11,0.15)]"
+            >
+              <div className="absolute inset-0 z-0 bg-[conic-gradient(from_0deg,transparent_40%,#f59e0b_50%,transparent_60%)] opacity-40 group-hover:opacity-80 transition-opacity duration-500 scale-110 animate-streak-active pointer-events-none" />
 
-            return (
-              <div
-                key={order.orderId}
-                className="relative rounded-3xl p-[1.5px] overflow-hidden transition-all duration-500 group mb-8 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.9)] hover:shadow-[0_30px_60px_-10px_rgba(245,158,11,0.2)] hover:-translate-y-1"
-              >
-                <div className="absolute inset-0 z-0 bg-[conic-gradient(from_0deg,transparent_40%,#f59e0b_50%,transparent_60%)] opacity-50 group-hover:opacity-100 transition-opacity duration-500 scale-110 animate-streak-active pointer-events-none" />
-
-                <div className="relative z-10 bg-[#121212]/95 backdrop-blur-xl rounded-[23px] p-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-                    <div>
-                      <h3 className="text-white text-xl font-black tracking-tight">
-                        Order #{order.orderId}
-                      </h3>
-
-                      <p className="text-neutral-400 text-sm mt-1">
-                        {new Date(order.createdAt).toLocaleString("en-IN", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      {order.orderStatus !== "Cancelled" &&
-                        order.orderStatus !== "Delivered" && (
-                          <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                            {order.orderStatus}
-                          </span>
-                        )}
-                      <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
-                        <HiOutlineClock size={22} className="text-amber-500" />
-                      </div>
-                    </div>
+              <div className="relative z-10 bg-[#121212]/95 backdrop-blur-xl rounded-[15px] p-4">
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <div>
+                    <h3 className="text-white text-base font-black tracking-tight">
+                      Order #{order.orderId}
+                    </h3>
+                    <p className="text-neutral-500 text-xs mt-0.5">
+                      {new Date(order.createdAt).toLocaleString("en-IN", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
                   </div>
 
-                  {order.orderStatus === "Cancelled" ? (
-                    <div className="flex items-center gap-3 mb-10 bg-red-500/10 border border-red-500/20 rounded-2xl px-5 py-4">
-                      <HiOutlineXCircle
-                        size={22}
-                        className="text-red-400 shrink-0"
-                      />
-                      <p className="text-red-400 font-bold text-sm">
-                        This order was cancelled.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="flex items-start justify-between mb-10">
-                      {steps.map((step, i) => (
-                        <div
-                          key={step.key}
-                          className="flex-1 flex flex-col items-center relative"
-                        >
-                          {i !== steps.length - 1 && (
-                            <div
-                              className={`absolute top-5 left-1/2 w-full h-[2px] ${
-                                i < activeStepIndex
-                                  ? "bg-amber-500"
-                                  : "bg-neutral-800"
-                              }`}
-                            />
-                          )}
+                  {order.orderStatus !== "Cancelled" &&
+                    order.orderStatus !== "Delivered" && (
+                      <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 shrink-0">
+                        {order.orderStatus}
+                      </span>
+                    )}
+                </div>
 
-                          <div
-                            className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300 ${
-                              i <= activeStepIndex
-                                ? "bg-amber-500 text-neutral-950 shadow-lg shadow-amber-500/30"
-                                : "bg-neutral-900 border border-neutral-700 text-neutral-500"
-                            }`}
-                          >
-                            {i <= activeStepIndex ? (
-                              <HiCheckCircle size={18} />
-                            ) : (
-                              i + 1
-                            )}
-                          </div>
+                {order.orderStatus === "Cancelled" && (
+                  <div className="flex items-center gap-2 mb-3 bg-red-500/10 border border-red-500/20 rounded-xl px-3 py-2">
+                    <HiOutlineXCircle size={16} className="text-red-400 shrink-0" />
+                    <p className="text-red-400 font-semibold text-xs">
+                      This order was cancelled.
+                    </p>
+                  </div>
+                )}
 
-                          <p
-                            className={`mt-3 text-[10px] sm:text-xs px-1 font-semibold text-center ${
-                              i <= activeStepIndex
-                                ? "text-white"
-                                : "text-neutral-500"
-                            }`}
-                          >
-                            {step.label}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="space-y-4">
-                    {order.items.map((item) => (
-                      <div
-                        key={item.foodItemId}
-                        className="flex items-center justify-between bg-zinc-900/70 border border-neutral-800 rounded-2xl p-4 hover:border-amber-500/30 transition-all"
-                      >
-                        <div>
-                          <h4 className="text-white font-bold text-base">
-                            {item.name}
-                          </h4>
-
-                          <p className="text-neutral-400 text-sm mt-1">
-                            Quantity : {item.quantity}
-                          </p>
-
-                          <p className="text-neutral-400 text-sm">
-                            Price : ₹{item.price}
-                          </p>
-                        </div>
-
-                        <p className="text-amber-500 font-bold">
-                          ₹{item.subtotal}
+                <div className="space-y-2">
+                  {order.items.map((item) => (
+                    <div
+                      key={item.foodItemId}
+                      className="flex items-center justify-between bg-zinc-900/70 border border-neutral-800 rounded-xl px-3 py-2.5 hover:border-amber-500/30 transition-all"
+                    >
+                      <div>
+                        <h4 className="text-white font-bold text-sm">
+                          {item.name}
+                        </h4>
+                        <p className="text-neutral-500 text-xs">
+                          Qty {item.quantity} · ₹{item.price}
                         </p>
                       </div>
-                    ))}
-                  </div>
+                      <p className="text-amber-500 font-bold text-sm">
+                        ₹{item.subtotal}
+                      </p>
+                    </div>
+                  ))}
+                </div>
 
-                  <div className="border-t border-neutral-800 mt-8 pt-5 flex justify-between items-center">
-                    <span className="text-neutral-400 font-semibold">
-                      Total Amount
-                    </span>
+                <div className="border-t border-neutral-800 mt-3 pt-3 flex justify-between items-center">
+                  <span className="text-neutral-400 text-sm font-semibold">
+                    Total
+                  </span>
+                  <span className="text-lg font-black text-amber-500">
+                    ₹{order.totalAmount}
+                  </span>
+                </div>
 
-                    <span className="text-xl sm:text-2xl font-black text-amber-500">
-                      ₹{order.totalAmount}
-                    </span>
-                  </div>
-
+                <div className="flex items-center gap-2 mt-3">
                   <button
                     onClick={() => navigate(`/tracking/${order.orderId}`)}
-                    className="mt-5 mb-5 w-full flex items-center justify-center gap-2 rounded-2xl border border-amber-500/30 bg-amber-500 py-3 text-neutral-950 font-bold text-sm hover:bg-amber-400 transition-all duration-300 active:scale-95"
+                    className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500 py-2 text-neutral-950 font-bold text-xs hover:bg-amber-400 transition-all duration-300 active:scale-95"
                   >
                     Track Order
                   </button>
 
-                  {/* Cancel Order — only while Placed or Preparing */}
                   {cancellableStatuses.includes(order.orderStatus) &&
                     (confirmingId === order.orderId ? (
-                      <div className="mt-5 flex flex-col sm:flex-row items-center gap-3 bg-red-500/5 border border-red-500/20 rounded-2xl px-5 py-4">
-                        <p className="text-sm text-neutral-300 font-semibold flex-1 text-center sm:text-left">
-                          Cancel this order? This can't be undone.
-                        </p>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleCancelOrder(order.orderId)}
-                            disabled={cancellingId === order.orderId}
-                            className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-400 text-white font-bold text-sm transition-all disabled:opacity-50"
-                          >
-                            {cancellingId === order.orderId
-                              ? "Cancelling..."
-                              : "Yes, Cancel"}
-                          </button>
-                          <button
-                            onClick={() => setConfirmingId(null)}
-                            className="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-sm transition-all"
-                          >
-                            Keep Order
-                          </button>
-                        </div>
+                      <div className="flex-1 flex items-center gap-1.5">
+                        <button
+                          onClick={() => handleCancelOrder(order.orderId)}
+                          disabled={cancellingId === order.orderId}
+                          className="flex-1 px-2 py-2 rounded-xl bg-red-500 hover:bg-red-400 text-white font-bold text-xs transition-all disabled:opacity-50"
+                        >
+                          {cancellingId === order.orderId ? "..." : "Confirm"}
+                        </button>
+                        <button
+                          onClick={() => setConfirmingId(null)}
+                          className="flex-1 px-2 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-xs transition-all"
+                        >
+                          Keep
+                        </button>
                       </div>
                     ) : (
                       <button
                         onClick={() => setConfirmingId(order.orderId)}
-                        className="mt-5 w-full flex items-center justify-center gap-2 rounded-2xl border border-red-500/20 bg-red-500/5 py-3 text-red-400 font-bold text-sm hover:bg-red-500 hover:text-white transition-all duration-300 active:scale-95"
+                        className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/5 py-2 text-red-400 font-bold text-xs hover:bg-red-500 hover:text-white transition-all duration-300 active:scale-95"
                       >
-                        <HiOutlineXCircle size={18} />
-                        Cancel Order
+                        <HiOutlineXCircle size={14} />
+                        Cancel
                       </button>
                     ))}
                 </div>
               </div>
-            );
-          })
+            </div>
+          ))
         )}
       </div>
     </div>
