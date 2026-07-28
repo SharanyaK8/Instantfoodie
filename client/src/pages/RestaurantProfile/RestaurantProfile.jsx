@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { HiArrowRightOnRectangle } from "react-icons/hi2";
 import Navbar from "../../components/Navbar";
 import {
   getMyRestaurants,
   createRestaurant,
   updateRestaurant,
 } from "../../services/restaurant.service";
+import { useAuth } from "../../context/AuthContext";
 
 function RestaurantProfile() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -87,6 +90,16 @@ function RestaurantProfile() {
     }
   }
 
+  async function handleLogout() {
+    try {
+      await logout();
+    } catch (err) {
+      console.log("Logout error:", err);
+    } finally {
+      navigate("/restaurant-login");
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#050505]">
@@ -101,11 +114,22 @@ function RestaurantProfile() {
       <Navbar />
 
       <div className="w-[95%] max-w-2xl mx-auto py-10">
-        <h1 className="text-3xl font-black text-white mb-2">
-          {existingRestaurant
-            ? "Update Restaurant Profile"
-            : "Set Up Your Restaurant"}
-        </h1>
+        <div className="flex items-start justify-between gap-4 mb-2">
+          <h1 className="text-3xl font-black text-white">
+            {existingRestaurant
+              ? "Update Restaurant Profile"
+              : "Set Up Your Restaurant"}
+          </h1>
+
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-900 border border-neutral-800 hover:border-red-500/40 text-neutral-300 hover:text-red-400 text-sm font-semibold transition-all shrink-0"
+          >
+            <HiArrowRightOnRectangle size={16} />
+            Logout
+          </button>
+        </div>
+
         <p className="text-neutral-400 mb-8">
           {existingRestaurant
             ? "Update your restaurant details below."
