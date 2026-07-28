@@ -186,27 +186,6 @@ const AdminLogin = () => {
           >
             {authLoading ? "Logging in..." : "Admin Sign In"}
           </button>
-
-          <p className="text-center text-neutral-400 text-xs sm:text-sm mt-6">
-            Need a restaurant login?{" "}
-            <Link
-              to="/restaurant-login"
-              onClick={(e) => handleNavClick(e, "/restaurant-login")}
-              className="text-sky-400 font-bold hover:underline ml-1"
-            >
-              Restaurant login
-            </Link>
-          </p>
-          <p className="text-center text-neutral-400 text-xs sm:text-sm mt-2">
-            Customer?{" "}
-            <Link
-              to="/login"
-              onClick={(e) => handleNavClick(e, "/login")}
-              className="text-sky-400 font-bold hover:underline ml-1"
-            >
-              Customer login
-            </Link>
-          </p>
         </motion.form>
       </div>
     </div>

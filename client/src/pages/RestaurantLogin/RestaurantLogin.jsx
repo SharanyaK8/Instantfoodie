@@ -187,24 +187,14 @@ const RestaurantLogin = () => {
             {authLoading ? "Logging in..." : "Restaurant Sign In"}
           </button>
 
-          <p className="text-center text-neutral-400 text-xs sm:text-sm mt-6">
-            Need a customer account?{" "}
-            <Link
-              to="/login"
-              onClick={(e) => handleNavClick(e, "/login")}
-              className="text-emerald-400 font-bold hover:underline ml-1"
-            >
-              Customer login
-            </Link>
-          </p>
           <p className="text-center text-neutral-400 text-xs sm:text-sm mt-2">
-            Admin?{" "}
+            New to InstantFoodie?{" "}
             <Link
-              to="/admin-login"
-              onClick={(e) => handleNavClick(e, "/admin-login")}
+              to="/signup"
+              onClick={(e) => handleNavClick(e, "/signup")}
               className="text-emerald-400 font-bold hover:underline ml-1"
             >
-              Admin login
+              Create an account
             </Link>
           </p>
         </motion.form>
