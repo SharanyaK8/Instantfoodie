@@ -2,13 +2,13 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 
-import promo1 from "../assets/promo1.png";
-import promo2 from "../assets/promo2.png";
-import promo3 from "../assets/promo3.png";
-import promo4 from "../assets/promo4.png";
-import promo5 from "../assets/promo5.png";
-import promo6 from "../assets/promo6.png";
-import promo7 from "../assets/promo7.png";
+import promo1 from "../assets/promo1.webp";
+import promo2 from "../assets/promo2.webp";
+import promo3 from "../assets/promo3.webp";
+import promo4 from "../assets/promo4.webp";
+import promo5 from "../assets/promo5.webp";
+import promo6 from "../assets/promo6.webp";
+import promo7 from "../assets/promo7.webp";
 
 const slides = [
   {

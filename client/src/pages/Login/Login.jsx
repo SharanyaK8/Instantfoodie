@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useAuth } from "../../context/AuthContext";
-import burgerImg from "../../assets/burger.png";
+import burgerImg from "../../assets/burger.webp";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
