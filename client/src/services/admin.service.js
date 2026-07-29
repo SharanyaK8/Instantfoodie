@@ -52,3 +52,8 @@ export const deleteFoodItemAdmin = async (id) => {
   const { data } = await api.delete(`/api/admin/food-item/${id}`);
   return data;
 };
+
+export const createRestaurantAccount = async (payload) => {
+  const { data } = await api.post("/api/admin/create-restaurant", payload);
+  return data;
+};
