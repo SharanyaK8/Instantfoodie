@@ -497,7 +497,7 @@ export const unblockUser = async (req, res) => {
 
 export const createRestaurantAccount = async (req, res) => {
   try {
-    const { fullName, email, password } = req.body;
+    const { fullName, email, password} = req.body;
 
     if (!fullName || !email || !password) {
       return res.status(400).json({

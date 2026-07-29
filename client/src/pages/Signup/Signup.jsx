@@ -37,13 +37,12 @@ const Signup = () => {
     e.preventDefault();
     setError("");
 
-    console.log("Submitting role:", role); // TEMP: remove after confirming fix
 
     const result = await register({
       fullName,
       email,
       password,
-      role,
+
     });
 
     if (result.success) {
@@ -214,7 +213,6 @@ const Signup = () => {
             className="w-full bg-neutral-950/40 rounded-xl px-4 py-3 sm:py-3.5 mb-6 text-white border border-neutral-800/80 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all duration-200 text-sm sm:text-base"
           >
             <option value="user">Customer</option>
-            <option value="restaurant">Restaurant</option>
           </select>
 
           <button
