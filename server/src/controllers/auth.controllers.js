@@ -62,59 +62,6 @@ export const userRegister = async (req, res) => {
   }
 };
 
-export const restaurantRegister = async (req, res) => {
-  const { fullName, email, password } = req.body;
-
-  try {
-    if (!fullName || !email || !password) {
-      return res.status(400).json({
-        message: "Please fill all the fields",
-      });
-    }
-
-    const userExists = await User.findOne({ email });
-
-    if (userExists) {
-      return res.status(400).json({
-        message: "User already exists",
-      });
-    }
-
-    if (password.length < 6) {
-      return res.status(400).json({
-        message: "Minimum 6 characters required => res",
-      });
-    }
-
-    const hash = await bcrypt.hash(password, 10);
-
-    const restaurant = await User.create({
-      fullName,
-      email,
-      password: hash,
-      role: "restaurant",
-    });
-
-    const token = Token(restaurant.email, restaurant._id, restaurant.role);
-
-    res.cookie("Token", token, cookieOptions);
-
-    return res.status(201).json({
-      message: "Restaurant registered successfully",
-      user: {
-        id: restaurant._id,
-        fullName: restaurant.fullName,
-        email: restaurant.email,
-        role: restaurant.role,
-      },
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message,
-    });
-  }
-};
-
 export const userLogin = async (req, res) => {
   const { email, password } = req.body;
 
@@ -202,7 +149,6 @@ export const restaurantLogin = async (req, res) => {
         message: "Your account has been blocked. Please contact support.",
       });
     }
-
 
     const check = await bcrypt.compare(password, user.password);
 
