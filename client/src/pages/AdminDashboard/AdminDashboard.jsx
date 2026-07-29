@@ -6,6 +6,7 @@ import {
   HiOutlineBuildingStorefront,
   HiOutlineClipboardDocumentList,
   HiOutlineCake,
+  HiOutlinePlusCircle,
 } from "react-icons/hi2";
 import {
   getUsers,
@@ -17,6 +18,7 @@ import {
   deleteFoodItemAdmin,
   getAllFoodsAdmin,
   getAllOrders,
+  createRestaurantAccount,
 } from "../../services/admin.service";
 
 const tabs = [
@@ -25,6 +27,11 @@ const tabs = [
     key: "restaurants",
     label: "Restaurants",
     icon: <HiOutlineBuildingStorefront size={18} />,
+  },
+  {
+    key: "createRestaurant",
+    label: "Create Restaurant",
+    icon: <HiOutlinePlusCircle size={18} />,
   },
   {
     key: "orders",
@@ -68,12 +75,12 @@ const AdminDashboard = () => {
           </button>
         </div>
 
-        <div className="flex items-center gap-2 mb-8 border-b border-neutral-800 pb-4">
+        <div className="flex items-center gap-2 mb-8 border-b border-neutral-800 pb-4 overflow-x-auto">
           {tabs.map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-colors ${activeTab === tab.key
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-colors whitespace-nowrap ${activeTab === tab.key
                 ? "bg-amber-500 text-neutral-950"
                 : "text-neutral-400 hover:text-white hover:bg-zinc-900"
                 }`}
@@ -86,9 +93,133 @@ const AdminDashboard = () => {
 
         {activeTab === "users" && <UsersTab />}
         {activeTab === "restaurants" && <RestaurantsTab />}
+        {activeTab === "createRestaurant" && <CreateRestaurantTab />}
         {activeTab === "orders" && <OrdersTab />}
         {activeTab === "foods" && <FoodsTab />}
       </div>
+    </div>
+  );
+};
+
+// ===================== Create Restaurant tab =====================
+const CreateRestaurantTab = () => {
+  const [form, setForm] = useState({ fullName: "", email: "", password: "", confirmPassword: "" });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+
+  const handleChange = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccessMsg("");
+
+    if (form.password !== form.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    if (form.password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await createRestaurantAccount({
+        fullName: form.fullName,
+        email: form.email,
+        password: form.password,
+      });
+
+      setSuccessMsg(`Restaurant account created for ${form.email}. They can now log in at /restaurant-login.`);
+      setForm({ fullName: "", email: "", password: "", confirmPassword: "" });
+    } catch (err) {
+      const status = err?.response?.status;
+      if (status === 404) {
+        setError(
+          "Backend support required — POST /api/admin/create-restaurant doesn't exist yet."
+        );
+      } else {
+        setError(err?.response?.data?.message || "Failed to create restaurant account.");
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="max-w-md">
+      <h3 className="text-lg font-bold text-white mb-1">Create Restaurant Account</h3>
+      <p className="text-neutral-400 text-sm mb-6">
+        Set up login credentials for a new restaurant partner. They'll be able to
+        log in and create their restaurant profile from their dashboard.
+      </p>
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {error && (
+          <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-amber-300 text-sm font-semibold text-center">
+            {error}
+          </div>
+        )}
+        {successMsg && (
+          <div className="rounded-2xl border border-green-500/20 bg-green-500/10 px-4 py-3 text-green-400 text-sm font-semibold text-center">
+            {successMsg}
+          </div>
+        )}
+
+        <div>
+          <label className="text-sm text-neutral-400 mb-1.5 block">Owner Full Name</label>
+          <input
+            required
+            value={form.fullName}
+            onChange={(e) => handleChange("fullName", e.target.value)}
+            className="w-full bg-zinc-950 border border-neutral-800 focus:border-amber-500 outline-none rounded-xl px-4 py-3 text-white transition-colors"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm text-neutral-400 mb-1.5 block">Email</label>
+          <input
+            required
+            type="email"
+            value={form.email}
+            onChange={(e) => handleChange("email", e.target.value)}
+            className="w-full bg-zinc-950 border border-neutral-800 focus:border-amber-500 outline-none rounded-xl px-4 py-3 text-white transition-colors"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm text-neutral-400 mb-1.5 block">Password</label>
+          <input
+            required
+            type="password"
+            value={form.password}
+            onChange={(e) => handleChange("password", e.target.value)}
+            className="w-full bg-zinc-950 border border-neutral-800 focus:border-amber-500 outline-none rounded-xl px-4 py-3 text-white transition-colors"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm text-neutral-400 mb-1.5 block">Confirm Password</label>
+          <input
+            required
+            type="password"
+            value={form.confirmPassword}
+            onChange={(e) => handleChange("confirmPassword", e.target.value)}
+            className="w-full bg-zinc-950 border border-neutral-800 focus:border-amber-500 outline-none rounded-xl px-4 py-3 text-white transition-colors"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={saving}
+          className="bg-amber-500 hover:bg-amber-400 text-neutral-950 font-black py-3 rounded-2xl transition-all active:scale-95 disabled:opacity-60"
+        >
+          {saving ? "Creating..." : "Create Restaurant Account"}
+        </button>
+      </form>
     </div>
   );
 };
