@@ -393,6 +393,7 @@ const RestaurantsTab = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [error, setError] = useState("");
   const [busyId, setBusyId] = useState(null);
+  const [blockingId, setBlockingId] = useState(null);
 
   useEffect(() => {
     loadRestaurants();
@@ -425,6 +426,32 @@ const RestaurantsTab = () => {
     }
   }
 
+  async function handleBlockToggle(restaurant) {
+    const ownerId = restaurant.owner?._id;
+    if (!ownerId) return;
+
+    setBlockingId(ownerId);
+    try {
+      if (restaurant.owner?.isBlocked) {
+        await unblockUser(ownerId);
+      } else {
+        await blockUser(ownerId);
+      }
+
+      setRestaurants((prev) =>
+        prev.map((r) =>
+          r._id === restaurant._id
+            ? { ...r, owner: { ...r.owner, isBlocked: !r.owner?.isBlocked } }
+            : r
+        )
+      );
+    } catch (err) {
+      alert("Failed to update restaurant owner status.");
+    } finally {
+      setBlockingId(null);
+    }
+  }
+
   return (
     <div>
 
@@ -442,13 +469,14 @@ const RestaurantsTab = () => {
                 <th className="py-3 pr-4 font-semibold">Email</th>
                 <th className="py-3 pr-4 font-semibold">Joined</th>
                 <th className="py-3 pr-4 font-semibold">Status</th>
+                <th className="py-3 pr-4 font-semibold">Owner Status</th>
                 <th className="py-3 pr-4 font-semibold">Action</th>
               </tr>
             </thead>
             <tbody>
               {restaurants.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-6 text-neutral-500 text-center">
+                  <td colSpan={7} className="py-6 text-neutral-500 text-center">
                     No restaurant accounts found.
                   </td>
                 </tr>
@@ -476,12 +504,36 @@ const RestaurantsTab = () => {
                       </span>
                     </td>
                     <td className="py-3 pr-4">
+                      <span
+                        className={`text-xs font-bold px-3 py-1 rounded-full ${r.owner?.isBlocked
+                            ? "bg-red-500/10 text-red-400"
+                            : "bg-green-500/10 text-green-400"
+                          }`}
+                      >
+                        {r.owner?.isBlocked ? "Blocked" : "Active"}
+                      </span>
+                    </td>
+                    <td className="py-3 pr-4 flex gap-2">
+                      <button
+                        disabled={blockingId === r.owner?._id}
+                        onClick={() => handleBlockToggle(r)}
+                        className={`text-xs font-bold rounded-lg px-3 py-1.5 disabled:opacity-50 ${r.owner?.isBlocked
+                            ? "border border-green-500 text-green-400"
+                            : "border border-amber-500 text-amber-400"
+                          }`}
+                      >
+                        {blockingId === r.owner?._id
+                          ? "..."
+                          : r.owner?.isBlocked
+                            ? "Unblock"
+                            : "Block"}
+                      </button>
                       <button
                         disabled={busyId === r._id}
                         onClick={() => handleDeleteRestaurant(r._id)}
                         className="text-xs font-bold text-red-400 border border-red-500/30 rounded-lg px-3 py-1.5 hover:bg-red-500/10 disabled:opacity-50"
                       >
-                        {busyId === r._id ? "..." : "Delete"}
+                        {busyId === r._id ? "Deleting..." : "Delete"}
                       </button>
                     </td>
                   </tr>

@@ -276,38 +276,6 @@ export const updateRestaurantStatus = async (req, res) => {
   }
 };
 
-// export const getAllOrders = async (req, res) => {
-//   try {
-//     const page = parseInt(req.query.page) || 1;
-//     const limit = parseInt(req.query.limit) || 10;
-
-//     const skip = (page - 1) * limit;
-
-//     const totalOrders = await Order.countDocuments();
-
-//     const orders = await Order.find()
-//       .populate("userId", "-password")
-//       .populate("restaurantId")
-//       .populate("items.foodItemId")
-//       .sort({ createdAt: -1 })
-//       .skip(skip)
-//       .limit(limit);
-
-//     return res.status(200).json({
-//       success: true,
-//       currentPage: page,
-//       totalPages: Math.ceil(totalOrders / limit),
-//       totalOrders,
-//       orders,
-//     });
-//   } catch (error) {
-//     return res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };
-
 export const getAllOrders = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -349,6 +317,37 @@ export const getAllOrders = async (req, res) => {
   }
 };
 
+//   try {
+//     const { id } = req.params;
+
+//     const restaurant = await Restaurant.findById(id);
+
+//     if (!restaurant) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Restaurant not found",
+//       });
+//     }
+
+//     // Delete all food items belonging to this restaurant
+//     await FoodItem.deleteMany({
+//       restaurantId: restaurant._id,
+//     });
+
+//     // Delete the restaurant
+//     await Restaurant.findByIdAndDelete(id);
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Restaurant deleted successfully",
+//     });
+//   } catch (error) {
+//     return res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
 export const deleteRestaurant = async (req, res) => {
   try {
     const { id } = req.params;
@@ -362,17 +361,17 @@ export const deleteRestaurant = async (req, res) => {
       });
     }
 
-    // Delete all food items belonging to this restaurant
     await FoodItem.deleteMany({
       restaurantId: restaurant._id,
     });
 
-    // Delete the restaurant
     await Restaurant.findByIdAndDelete(id);
+
+    await User.findByIdAndDelete(restaurant.owner);
 
     return res.status(200).json({
       success: true,
-      message: "Restaurant deleted successfully",
+      message: "Restaurant and owner account deleted successfully",
     });
   } catch (error) {
     return res.status(500).json({
@@ -381,7 +380,6 @@ export const deleteRestaurant = async (req, res) => {
     });
   }
 };
-
 export const getAllFoodItems = async (req, res) => {
   try {
     const allFooditems = await FoodItem.find().populate(

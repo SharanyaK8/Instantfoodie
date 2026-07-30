@@ -85,7 +85,7 @@ export const updateRestaurant = async (req, res) => {
       },
       updateData,
       {
-        new: true,
+        returnDocument: "after",
         runValidators: true,
       },
     );
