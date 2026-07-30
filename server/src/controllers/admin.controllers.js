@@ -494,3 +494,49 @@ export const unblockUser = async (req, res) => {
     });
   }
 };
+
+export const createRestaurantAccount = async (req, res) => {
+  try {
+    const { fullName, email, password} = req.body;
+
+    if (!fullName || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Please fill all the fields",
+      });
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "An account with this email already exists",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const restaurantOwner = await User.create({
+      fullName,
+      email,
+      password: hashedPassword,
+      role: "restaurant",
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Restaurant account created successfully",
+      user: {
+        id: restaurantOwner._id,
+        fullName: restaurantOwner.fullName,
+        email: restaurantOwner.email,
+        role: restaurantOwner.role,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

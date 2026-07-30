@@ -133,7 +133,7 @@ const CreateRestaurantTab = () => {
         password: form.password,
       });
 
-      setSuccessMsg(`Restaurant account created for ${form.email}. They can now log in at /restaurant-login.`);
+      setSuccessMsg(`Restaurant account created for ${form.email}`);
       setForm({ fullName: "", email: "", password: "", confirmPassword: "" });
     } catch (err) {
       const status = err?.response?.status;

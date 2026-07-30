@@ -14,6 +14,7 @@ import {
   getAllFoodItems,
   blockUser,
   unblockUser,
+  createRestaurantAccount,
 } from "../controllers/admin.controllers.js";
 
 import authMiddleware from "../middlewares/auth.middleware.js";
@@ -116,5 +117,12 @@ router.patch("/block-user/:id", blockUser);
  * @access Admin
  */
 router.patch("/unblock-user/:id", unblockUser);
+
+/**
+ * @route POST /api/admin/create-restaurant
+ * @description Create a new restaurant account
+ * @access Admin
+ */
+router.post("/create-restaurant", createRestaurantAccount);
 
 export default router;

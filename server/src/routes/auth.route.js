@@ -3,7 +3,6 @@ import {
   userRegister,
   userLogin,
   userLogout,
-  restaurantRegister,
   restaurantLogin,
 } from "../controllers/auth.controllers.js";
 
@@ -29,13 +28,6 @@ router.post("/login", userLogin);
  * @access User
  */
 router.post("/logout", userLogout);
-
-/**
- * @route POST /api/auth/restaurant/register
- * @description Register a new restaurant owner account
- * @access Public
- */
-router.post("/restaurant/register", restaurantRegister);
 
 /**
  * @route POST /api/auth/restaurant/login
