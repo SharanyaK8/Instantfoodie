@@ -20,16 +20,24 @@ app.use(cookieParser()); // to read cookies (used for login token
 app.use(express.urlencoded({ extended: true })); //to parse the data sent through form
 
 // Allow requests from frontend (React app) with cookies enabled
+const allowedOrigins = [
+    "http://localhost:5173",
+    process.env.CLIENT_URL,
+].filter(Boolean);
+
 app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      // add your deployed frontend URL here later, e.g:
-      // "https://instantfoodie.vercel.app"
-    ],
-    credentials: true,
-  }),
+    cors({
+        origin: allowedOrigins,
+        credentials: true,
+    })
 );
+
+app.get("/", (req, res) => {
+    res.json({
+        success: true,
+        message: "InstantFoodie API Running"
+    });
+});
 
 app.use("/api/auth", authRouter);
 
