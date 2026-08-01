@@ -83,7 +83,7 @@ function RestaurantOrders() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505]">
+    <div className="min-h-screen bg-[#1E1512]">
       <Navbar />
 
       <div className="w-[95%] max-w-6xl mx-auto py-10">
