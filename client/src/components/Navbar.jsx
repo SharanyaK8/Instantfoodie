@@ -115,17 +115,15 @@ const Navbar = ({ cartCount = 0 }) => {
                   <li key={link.path}>
                     <Link
                       to={link.path}
-                      className={`relative inline-block pb-1 text-sm font-semibold tracking-wide transition-colors group/nav ${
-                        isActive
+                      className={`relative inline-block pb-1 text-sm font-semibold tracking-wide transition-colors group/nav ${isActive
                           ? "text-amber-500"
                           : "text-neutral-400 hover:text-white"
-                      }`}
+                        }`}
                     >
                       {link.label}
                       <span
-                        className={`absolute -bottom-0.5 left-0 h-[2px] bg-amber-500 transition-all duration-300 ${
-                          isActive ? "w-full" : "w-0 group-hover/nav:w-full"
-                        }`}
+                        className={`absolute -bottom-0.5 left-0 h-[2px] bg-amber-500 transition-all duration-300 ${isActive ? "w-full" : "w-0 group-hover/nav:w-full"
+                          }`}
                       />
                     </Link>
                   </li>
@@ -142,11 +140,10 @@ const Navbar = ({ cartCount = 0 }) => {
                   <li key={link.path}>
                     <Link
                       to={link.path}
-                      className={`p-2 rounded-full transition-colors ${
-                        isActive
+                      className={`p-2 rounded-full transition-colors ${isActive
                           ? "text-amber-500 bg-amber-500/10"
                           : "text-neutral-400 hover:text-white"
-                      }`}
+                        }`}
                     >
                       {link.icon}
                     </Link>
@@ -196,6 +193,13 @@ const Navbar = ({ cartCount = 0 }) => {
                 <div className="absolute right-0 mt-2 w-56 bg-zinc-900 border border-neutral-700 rounded-xl shadow-xl z-50 overflow-hidden">
                   {!isAuthenticated ? (
                     <>
+                      <Link
+                        to="/login"
+                        onClick={() => setMenuOpen(false)}
+                        className="block px-4 py-3 text-white hover:bg-neutral-800"
+                      >
+                        Login as Customer
+                      </Link>
 
                       <Link
                         to="/restaurant-login"
